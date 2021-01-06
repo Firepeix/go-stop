@@ -17,7 +17,6 @@ class CreateStreetConnectionsTable extends Migration
             $table->id();
             $table->foreignId('parent_street_id');
             $table->foreignId('child_street_id');
-    
             $table->foreign('parent_street_id')->references('id')->on('streets');
             $table->foreign('child_street_id')->references('id')->on('streets');
             $table->timestamps();

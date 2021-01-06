@@ -2,10 +2,16 @@
 
 namespace App\Models\Geographic;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class StreetConnection extends Model
+use App\Models\AbstractModel;
+
+class StreetConnection extends AbstractModel
 {
-    use HasFactory;
+    public static function create(Street $outgoingStreet, Street $incomingStreet) : self
+    {
+        $connection = new StreetConnection();
+        $connection->parent_street_id = $outgoingStreet->getId();
+        $connection->child_street_id = $incomingStreet->getId();
+        return $connection;
+    }
 }
