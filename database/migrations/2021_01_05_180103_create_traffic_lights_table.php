@@ -16,7 +16,7 @@ class CreateTrafficLightsTable extends Migration
         Schema::create('traffic_lights', function (Blueprint $table) {
             $table->id();
             $table->foreignId('street_id');
-            $table->enum('status', [\App\Models\Control\TrafficLight::getAvailableStatus()]);
+            $table->enum('status', [\App\Models\Control\TrafficLight::getAvailableStatus()])->default(\App\Models\Control\TrafficLight::CLOSED);
             $table->foreign('street_id')->references('id')->on('streets');
             $table->timestamps();
         });
