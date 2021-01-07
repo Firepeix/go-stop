@@ -25,6 +25,12 @@ class TrafficLightController extends Controller
         $this->repository = $repository;
     }
     
+    public function index() : JsonResponse
+    {
+        $trafficLights = $this->repository->getTrafficLights();
+        return $this->collection($trafficLights, new TrafficLightTransformer());
+    }
+    
     public function store(CreateTrafficLightRequest $request) : JsonResponse
     {
         $light = $this->service->createTrafficLight($request);
