@@ -18,6 +18,7 @@ class CreateImagesTable extends Migration
             $table->foreignId('camera_id');
             $table->boolean('processed')->default(false);
             $table->integer('vehicles_quantity')->nullable();
+            $table->string('path')->nullable();
     
             $table->foreign('camera_id')->references('id')->on('cameras');
             $table->timestamps();
