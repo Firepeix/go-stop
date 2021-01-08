@@ -2,10 +2,22 @@
 
 namespace App\Models\General;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\AbstractModel;
 
-class History extends Model
+class History extends AbstractModel
 {
-    use HasFactory;
+    const CREATE = 1;
+    const UPDATE = 2;
+    
+    public static function create(int $entity_id, int $action, array $metadata = null) : self
+    {
+        $history = new History();
+        $history->entity_id = $entity_id;
+        $history->action = $action;
+        if ($metadata !== null) {
+            $history->metadata = json_encode($metadata);
+        }
+        
+        return $history;
+    }
 }

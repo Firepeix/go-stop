@@ -2,42 +2,58 @@
 
 namespace App\Models\Control;
 
-use App\Interfaces\Control\CreateTrafficLightInterface;
+use App\Interfaces\General\History\RegisterHistory;
 use App\Models\AbstractModel;
 use App\Models\Geographic\Street;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class TrafficLight extends AbstractModel
+class TrafficLight extends AbstractModel implements RegisterHistory
 {
-    const CLOSED = '0';
+    const CLOSED  = '0';
     const WARNING = '1';
-    const OPEN = '2';
+    const OPEN    = '2';
     
-    public function street() : BelongsTo
+    public function street(): BelongsTo
     {
         return $this->belongsTo(Street::class);
     }
     
-    public static function create(CreateTrafficLightInterface $createTrafficLight) : self
+    public static function create(int $streetId, int $defaultSwitchTime): self
     {
-        $light = new self();
-        $light->street_id = $createTrafficLight->getStreet()->getId();
-        $light->status = self::CLOSED;
+        $light                    = new self();
+        $light->street_id         = $streetId;
+        $light->status            = self::CLOSED;
+        $light->default_switch_time = $defaultSwitchTime;
         return $light;
     }
     
-    public function getStatus() : int
+    public function getStatus(): string
     {
         return $this->status;
     }
     
-    public function getStreet() : Street
+    public function getDefaultSwitchTime(): int
+    {
+        return $this->default_switch_time;
+    }
+    
+    public function getStreet(): Street
     {
         return $this->street;
     }
     
-    public static function getAvailableStatus() : array
+    public static function getAvailableStatus(): array
     {
         return [self::CLOSED, self::WARNING, self::OPEN];
+    }
+    
+    public function warn(): void
+    {
+        $this->status = self::WARNING;
+    }
+    
+    public function close(): void
+    {
+        $this->status = self::CLOSED;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Control;
 
-use App\Interfaces\Control\CreateTrafficLightInterface;
+use App\Interfaces\Control\TrafficLight\CreateTrafficLightInterface;
 use App\Models\Geographic\Street;
 use App\Repositories\Interfaces\Geographic\StreetRepositoryInterface;
 use Illuminate\Foundation\Http\FormRequest;
@@ -23,16 +23,22 @@ class CreateTrafficLightRequest extends FormRequest implements CreateTrafficLigh
         return true;
     }
 
-    #[ArrayShape(['streetId' => "string[]"])]
+    #[ArrayShape(["string"])]
     public function rules() : array
     {
         return [
-            'streetId' => ['required', 'numeric']
+            'streetId' => ['required', 'numeric'],
+            'defaultSwitchTime' => ['required', 'numeric']
         ];
     }
     
     public function getStreet(): Street
     {
         return $this->streetRepository->findOrFail($this->get('streetId'));
+    }
+    
+    public function getDefaultSwitchTime(): int
+    {
+        return $this->get('defaultSwitchTime');
     }
 }

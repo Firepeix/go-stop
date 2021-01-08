@@ -17,6 +17,8 @@ class CreateTrafficLightsTable extends Migration
             $table->id();
             $table->foreignId('street_id');
             $table->enum('status', [\App\Models\Control\TrafficLight::getAvailableStatus()])->default(\App\Models\Control\TrafficLight::CLOSED);
+            $table->integer('default_switch_time');
+
             $table->foreign('street_id')->references('id')->on('streets');
             $table->timestamps();
         });
