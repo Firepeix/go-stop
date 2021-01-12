@@ -13,5 +13,7 @@ interface TrafficLightServiceInterface
     
     public function signalClose(TrafficLight $light) : void;
     
+    public function signalOpen(TrafficLight $light) : void;
+    
     public function close(TrafficLight $light);
 }

@@ -36,9 +36,26 @@ class Image extends AbstractModel
     public function getFile() : File
     {
         if ($this->file === null) {
-            $this->file = new File($this->path ?? $this->tmpPath);
+            $localPath = $this->path ?? $this->tmpPath;
+            $this->file = new File(storage_path("app/$localPath"));
         }
         
         return $this->file;
+    }
+    
+    public function process(int $quantity) : void
+    {
+        $this->processed = true;
+        $this->vehicles_quantity = $quantity;
+    }
+    
+    public function hasProcessed() : bool
+    {
+        return $this->processed === true || $this->processed === 1;
+    }
+    
+    public function getVehiclesQuantity() : int
+    {
+        return $this->vehicles_quantity;
     }
 }

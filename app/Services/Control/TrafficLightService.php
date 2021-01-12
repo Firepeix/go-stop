@@ -40,6 +40,14 @@ class TrafficLightService implements TrafficLightServiceInterface
         event(new NewSignal($this, $light, TrafficLight::CLOSED));
     }
     
+    public function signalOpen(TrafficLight $light): void
+    {
+        $status = $light->getStatus();
+        $light->open();
+        $this->repository->saveTrafficLight($light);
+        $this->registerStatusChange($light, $status, TrafficLight::OPEN);
+    }
+    
     public function close(TrafficLight $light)
     {
         $status = $light->getStatus();

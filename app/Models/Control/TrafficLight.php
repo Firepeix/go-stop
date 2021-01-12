@@ -56,4 +56,9 @@ class TrafficLight extends AbstractModel implements RegisterHistory
     {
         $this->status = self::CLOSED;
     }
+    
+    public function open(): void
+    {
+        $this->status = self::OPEN;
+    }
 }

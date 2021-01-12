@@ -18,7 +18,6 @@ class TrafficLightServiceTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->createApplication();
         $this->service = app()->make(TrafficLightServiceInterface::class);
-        $this->service = app()->make(TrafficLightServiceInterface::class);
     }
     
     private function getTrafficLightStub(bool $open = false) : TrafficLight
@@ -45,6 +44,18 @@ class TrafficLightServiceTest extends TestCase
             'entity_id' => $light->getId(),
             'action' => History::UPDATE,
             'metadata' => json_encode(['from' => TrafficLight::WARNING, 'to' => TrafficLight::CLOSED])
+        ]);
+    }
+    
+    public function testSignalOpen() : void
+    {
+        $light = $this->getTrafficLightStub();
+        $this->service->signalOpen($light);
+        $this->assertSame(TrafficLight::OPEN, $light->refresh()->getStatus());
+        $this->assertDatabaseHas('histories', [
+            'entity_id' => $light->getId(),
+            'action' => History::UPDATE,
+            'metadata' => json_encode(['from' => TrafficLight::CLOSED, 'to' => TrafficLight::OPEN])
         ]);
     }
 }

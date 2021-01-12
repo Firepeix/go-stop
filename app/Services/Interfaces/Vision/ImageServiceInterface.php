@@ -13,4 +13,6 @@ interface ImageServiceInterface
     public function createImage(CreateImageInterface $createImage) : Image;
     
     public function storeImage(Image $image) : string;
+    
+    public function processImage(Image $image) : void;
 }
