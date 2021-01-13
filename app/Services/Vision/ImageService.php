@@ -6,6 +6,7 @@ namespace App\Services\Vision;
 use App\Interfaces\Vision\CreateImageInterface;
 use App\Models\Vision\Camera;
 use App\Models\Vision\Image;
+use App\Primitives\File;
 use App\Repositories\Interfaces\Vision\ImageRepositoryInterface;
 use App\Services\Interfaces\Vision\ImageLearningMachineServiceInterface;
 use App\Services\Interfaces\Vision\ImageServiceInterface;
@@ -30,9 +31,9 @@ class ImageService implements ImageServiceInterface
         return $path;
     }
     
-    public function createImage(CreateImageInterface $createImage): Image
+    public function createImage(Camera $camera, File $file): Image
     {
-        return Image::create($createImage);
+        return Image::create($camera, $file);
     }
     
     public function processImage(Image $image): void

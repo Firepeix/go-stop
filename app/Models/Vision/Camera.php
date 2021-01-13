@@ -2,6 +2,7 @@
 
 namespace App\Models\Vision;
 
+use App\Interfaces\Vision\Camera\Parsers\CameraImageParser;
 use App\Interfaces\Vision\CreateCameraInterface;
 use App\Models\AbstractModel;
 use App\Models\Control\TrafficLight;

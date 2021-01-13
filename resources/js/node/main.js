@@ -5,10 +5,9 @@ const config = require('../../../nightwatch.conf.js');
 const app = express();
 app.use(express.json());
 
-router.get('/get-camera', async (request, response) => {
+router.post('/get-camera', async (request, response) => {
   try {
-   // await getSnapshot(request.body.state, request.body.id);
-    await getSnapshot(1);
+    await getSnapshot(request.body.id, request.body.sessionId, request.body.frames, request.body.secondsPerFrame);
   } catch (e) {
     console.log(e);
   }
@@ -23,32 +22,35 @@ server.setTimeout(30 * 1000);
 
 app.use(express.json());
 
-async function getSnapshot (id) {
+async function getSnapshot (id, sessionId, frames, secondsPerFrame) {
   return new Promise((resolve, reject) => {
     try {
       nightwatch.cli(function (argv) {
         config.test_settings.cameraId = id;
+        config.test_settings.cameraSessionId = sessionId;
+        config.test_settings.frames = frames;
+        config.test_settings.secondsPerFrame = secondsPerFrame;
         argv._source = [`./resources/js/vision/snapshot.js`];
         const runner = nightwatch.CliRunner(argv);
         runner
           .setup(config)
-          .startWebDriver()
-          .catch(err => {
-            resolve();
-          })
-          .then(() => {
-            return runner.runTests();
-          })
-          .catch(err => {
-            resolve();
-          })
-          .then(() => {
-            runner.stopWebDriver();
-            resolve();
-          })
-          .catch(err => {
-            resolve();
-          });
+            .startWebDriver()
+            .catch(err => {
+              resolve();
+            })
+            .then(() => {
+              return runner.runTests();
+            })
+            .catch(err => {
+              resolve();
+            })
+            .then(() => {
+              runner.stopWebDriver();
+              resolve();
+            })
+            .catch(err => {
+              resolve();
+            });
       });
     } catch (err) {
       resolve();

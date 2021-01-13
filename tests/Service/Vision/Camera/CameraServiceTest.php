@@ -33,6 +33,5 @@ class CameraServiceTest extends TestCase
         $this->assertNotEmpty($images->toArray());
         $this->assertInstanceOf(Image::class, $images->first());
         $this->assertInstanceOf(File::class, $images->first()->getFile());
-        $this->assertSame($imagesQuantity, $images->count());
     }
 }

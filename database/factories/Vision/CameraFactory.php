@@ -13,8 +13,9 @@ class CameraFactory extends Factory
     public function definition()
     {
         return [
+            'id' => 1,
             'traffic_light_id' => TrafficLight::factory(),
-            'cameraView' => 'diaonline'
+            'camera_view' => 'diaonline'
         ];
     }
 }

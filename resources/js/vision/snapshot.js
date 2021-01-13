@@ -4,8 +4,8 @@ module.exports = {
     let currentSnaps = 0;
     const id = browser.options.test_settings.cameraId;
     const cameraSessionId = browser.options.test_settings.cameraSessionId;
-    const maxSnaps = browser.options.test_settings.snapsQuantity;
-    const secondsPerFrame = browser.options.test_settings.secondsPerFrame ?? 1050
+    const maxSnaps = browser.options.test_settings.frames;
+    const secondsPerFrame = browser.options.test_settings.secondsPerFrame !== undefined ? browser.options.test_settings.secondsPerFrame : 1050
     browser
       .url('http://localhost/web/snapshot/' + id)
       .waitForElementVisible('.rmp-button', 10 * 1000)
@@ -23,12 +23,12 @@ module.exports = {
           clearInterval(interval)
         }
       }, secondsPerFrame)
-    }, 4 * 1000)
+    }, 6 * 1000)
 
-    browser.pause((maxSnaps + 4) * secondsPerFrame).end();
+    browser.pause((maxSnaps + 7) * secondsPerFrame).end();
   }
 };
 
 function storeImage (sessionCameraId, index, value) {
-  fs.writeFileSync(`./storage/app/raw-images/sessionCameraId/${index}.txt`, value);
+  fs.writeFileSync(`./storage/app/raw-images/${sessionCameraId}/${index}.txt`, value);
 }

@@ -19,11 +19,11 @@ class Image extends AbstractModel
         $this->tmpPath = null;
     }
     
-    public static function create(CreateImageInterface $createImage) : Image
+    public static function create(Camera $camera, File $file) : Image
     {
         $image = new Image();
-        $image->camera_id = $createImage->getCamera()->getId();
-        $image->tmpPath = $createImage->getFile()->path();
+        $image->camera_id = $camera->getId();
+        $image->tmpPath = $file->path();
         
         return $image;
     }
@@ -36,8 +36,8 @@ class Image extends AbstractModel
     public function getFile() : File
     {
         if ($this->file === null) {
-            $localPath = $this->path ?? $this->tmpPath;
-            $this->file = new File(storage_path("app/$localPath"));
+            $localPath = $this->path !== null ? storage_path("app/$this->path") : $this->tmpPath;
+            $this->file = new File($localPath);
         }
         
         return $this->file;

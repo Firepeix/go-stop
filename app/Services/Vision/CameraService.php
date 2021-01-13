@@ -4,22 +4,22 @@
 namespace App\Services\Vision;
 
 
+use App\Interfaces\Vision\Camera\Parsers\CameraImageParser;
 use App\Interfaces\Vision\CreateCameraInterface;
 use App\Models\Vision\Camera;
+use App\Primitives\File;
 use App\Services\Interfaces\Vision\CameraServiceInterface;
-use Carbon\Carbon;
-use Illuminate\Contracts\Filesystem\Filesystem;
+use App\Services\Interfaces\Vision\ImageServiceInterface;
+use App\Vision\Camera\Parsers\DiaOnlineParser;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class CameraService implements CameraServiceInterface
 {
-    private Filesystem $rawImagesStorage;
+    private ImageServiceInterface $imageService;
     
-    public function __construct()
+    public function __construct(ImageServiceInterface $imageService)
     {
-        $this->rawImagesStorage = Storage::disk('raw-images');
+        $this->imageService = $imageService;
     }
     
     public function createCamera(CreateCameraInterface $createCamera): Camera
@@ -27,20 +27,34 @@ class CameraService implements CameraServiceInterface
         return Camera::create($createCamera);
     }
     
-    public function captureImages(Camera $camera, int $imagesQuantity, $secondsPerFrame): Collection
+    public function captureImages(Camera $camera, int $imagesQuantity, int $secondsPerFrame): Collection
+    {
+        $parser = $this->findParser($camera);
+        $images = $this->createImagesFromBase64Files($camera, $parser->captureFiles($imagesQuantity, $secondsPerFrame));
+        $parser->closesSession();
+        return $images;
+    }
+    
+    /**
+     * @param Camera     $camera
+     * @param Collection|File[] $files
+     * @return Collection
+     */
+    private function createImagesFromBase64Files(Camera $camera, Collection $files) : Collection
     {
         $images = new Collection();
-        $cameraSessionId = $this->createCameraSession();
-        dump($cameraSessionId);
+        foreach ($files as $file) {
+            $images->push($this->imageService->createImage($camera, $file->spawnBase64File()));
+        }
         
         return $images;
     }
     
-    private function createCameraSession() : string
+    private function findParser(Camera $camera) : CameraImageParser
     {
-        $id = hash('md5', Carbon::now()->toDateTimeString() . Str::random(4));
-        $this->rawImagesStorage->makeDirectory($id);
-        
-        return $id;
+        $view = $camera->getCameraView();
+        return match($view) {
+            'diaonline' => new DiaOnlineParser($camera->getId())
+        };
     }
 }
