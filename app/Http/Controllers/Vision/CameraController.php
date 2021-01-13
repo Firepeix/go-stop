@@ -9,6 +9,8 @@ use App\Http\Requests\Vision\CreateCameraRequest;
 use App\Repositories\Interfaces\Vision\CameraRepositoryInterface;
 use App\Services\Interfaces\Vision\CameraServiceInterface;
 use App\Transformers\Vision\CameraTransformer;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
@@ -30,5 +32,11 @@ class CameraController extends Controller
         $camera = $this->service->createCamera($request);
         $this->repository->saveCamera($camera);
         return $this->item($camera, new CameraTransformer());
+    }
+    
+    public function cameraView(int $cameraId) : View|Factory
+    {
+        $camera = $this->repository->findOrFail($cameraId);
+        return view('vision.camera.' . $camera->getCameraView());
     }
 }

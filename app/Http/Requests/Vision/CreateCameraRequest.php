@@ -27,12 +27,18 @@ class CreateCameraRequest extends FormRequest implements CreateCameraInterface
     public function rules() : array
     {
         return [
-            'trafficLightId' => ['required', 'numeric']
+            'trafficLightId' => ['required', 'numeric'],
+            'cameraView' => ['required', 'max:255', 'min:3']
         ];
     }
     
     public function getTrafficLight(): TrafficLight
     {
         return $this->trafficLightRepository->findOrFail($this->get('trafficLightId'));
+    }
+    
+    public function getCameraView(): string
+    {
+        return $this->get('cameraView');
     }
 }

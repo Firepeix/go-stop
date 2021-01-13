@@ -18,11 +18,17 @@ class Camera extends AbstractModel
     {
         $camera = new Camera();
         $camera->traffic_light_id = $createCamera->getTrafficLight()->getId();
+        $camera->camera_view = $createCamera->getCameraView();
         return $camera;
     }
     
     public function getTrafficLight() : TrafficLight
     {
         return $this->trafficLight;
+    }
+    
+    public function getCameraView() : string
+    {
+        return $this->camera_view;
     }
 }

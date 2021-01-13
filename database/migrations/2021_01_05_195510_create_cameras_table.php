@@ -16,6 +16,7 @@ class CreateCamerasTable extends Migration
         Schema::create('cameras', function (Blueprint $table) {
             $table->id();
             $table->foreignId('traffic_light_id');
+            $table->string('camera_view');
             $table->timestamps();
     
             $table->foreign('traffic_light_id')->references('id')->on('traffic_lights');
