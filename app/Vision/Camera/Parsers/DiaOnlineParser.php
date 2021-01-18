@@ -5,7 +5,6 @@ namespace App\Vision\Camera\Parsers;
 
 
 use App\Interfaces\Vision\Camera\Parsers\CameraImageParser;
-use App\Models\Vision\Image;
 use App\Primitives\File;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -16,10 +15,12 @@ use Illuminate\Support\Str;
 
 class DiaOnlineParser implements CameraImageParser
 {
-    private Filesystem $rawImagesStorage;
     private string $sessionId;
     private int $cameraId;
+    private bool $sandbox;
+    private Filesystem $rawImagesStorage;
     private Client $client;
+    
     
     /**
      * @var Collection|File[]
@@ -33,6 +34,7 @@ class DiaOnlineParser implements CameraImageParser
         $this->createSession();
         $this->cameraId = $cameraId;
         $this->files = new Collection();
+        $this->sandbox = env('APP_ENV') === 'testing';
     }
     
     private function createSession() : void
@@ -57,7 +59,7 @@ class DiaOnlineParser implements CameraImageParser
     private function openSession(int $frames, int $secondsPerFrame): void
     {
         $this->files = new Collection();
-        if (env('APP_ENV') !== 'testing') {
+        if (!$this->sandbox) {
             $this->client->post('/get-camera', [
                 'json' => [
                     'id' => $this->cameraId,
@@ -75,7 +77,7 @@ class DiaOnlineParser implements CameraImageParser
         $path = 'stubs/vision/camera/raw-images';
         $rawImages = storage_path('app/stubs/vision/camera/raw-images');
         
-        if (env('APP_ENV') !== 'testing') {
+        if (!$this->sandbox) {
             $storage = $this->rawImagesStorage;
             $path = $this->sessionId;
             $rawImages = storage_path('app/raw-images/' . $this->sessionId);
