@@ -5,9 +5,10 @@ namespace App\Transformers\Control;
 
 
 use App\Models\Control\TrafficLight;
+use App\Primitives\NumberPrimitive;
 use App\Transformers\Geographic\StreetTransformer;
 use App\Transformers\Transformer;
-use League\Fractal\Resource\Collection as ResourceCollection;
+use League\Fractal\Resource\Item;
 
 class TrafficLightTransformer extends Transformer
 {
@@ -16,12 +17,14 @@ class TrafficLightTransformer extends Transformer
     public function transform(TrafficLight $light): array
     {
         return $this->change($light, [
+            'protocol' => NumberPrimitive::toProtocol($light->getId()),
+            'defaultSwitchTime' => $light->getDefaultSwitchTime(),
             'status' => $light->getStatus()
         ]);
     }
     
-    public function includeStreet(TrafficLight $light) : ResourceCollection
+    public function includeStreet(TrafficLight $light) : Item
     {
-        return $this->collection($light->getStreet(), new StreetTransformer());
+        return $this->item($light->getStreet(), new StreetTransformer());
     }
 }

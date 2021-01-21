@@ -28,6 +28,11 @@ class Camera extends AbstractModel
         return $this->trafficLight;
     }
     
+    public function getTrafficLightId() : int
+    {
+        return $this->traffic_light_id;
+    }
+    
     public function getCameraView() : string
     {
         return $this->camera_view;
