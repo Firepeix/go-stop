@@ -20,6 +20,12 @@ class CameraController extends Controller
     private CameraServiceInterface $service;
     private CameraRepositoryInterface $repository;
     
+    public function index()
+    {
+        $streets = $this->repository->getCameras();
+        return $this->collection($streets, new CameraTransformer());
+    }
+    
     public function __construct(Request $request, Response $response, CameraServiceInterface $service, CameraRepositoryInterface $repository)
     {
         parent::__construct($request, $response);

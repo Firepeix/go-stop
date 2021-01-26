@@ -17,7 +17,7 @@ class TrafficLightTransformer extends Transformer
     public function transform(TrafficLight $light): array
     {
         return $this->change($light, [
-            'protocol' => NumberPrimitive::toProtocol($light->getId()),
+            'protocol' => NumberPrimitive::toProtocol($light->getId()). " - {$light->getStreet()->getName()}",
             'defaultSwitchTime' => $light->getDefaultSwitchTime(),
             'status' => $light->getStatus()
         ]);
