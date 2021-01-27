@@ -15,11 +15,13 @@ class CreateTrafficLightsTable extends Migration
     {
         Schema::create('traffic_lights', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('street_id');
+            $table->foreignId('incoming_street_id');
+            $table->foreignId('outgoing_street_id');
             $table->enum('status', [\App\Models\Control\TrafficLight::getAvailableStatus()])->default(\App\Models\Control\TrafficLight::CLOSED);
             $table->integer('default_switch_time');
 
-            $table->foreign('street_id')->references('id')->on('streets');
+            $table->foreign('incoming_street_id')->references('id')->on('streets');
+            $table->foreign('outgoing_street_id')->references('id')->on('streets');
             $table->timestamps();
         });
     }

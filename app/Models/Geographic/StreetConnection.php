@@ -9,6 +9,7 @@ class StreetConnection extends AbstractModel
 {
     public static function create(Street $outgoingStreet, Street $incomingStreet) : self
     {
+        dd(213);
         $connection = new StreetConnection();
         $connection->parent_street_id = $outgoingStreet->getId();
         $connection->child_street_id = $incomingStreet->getId();

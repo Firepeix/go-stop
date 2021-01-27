@@ -13,4 +13,6 @@ interface StreetServiceInterface
     public function createStreet(CreateStreetInterface $createStreet) : Street;
     
     public function createConnections(Street $street, Collection $streets) : Collection;
+    
+    public function constructSample(Collection $streets) : array;
 }

@@ -15,6 +15,9 @@ class CreateStreetSamplesTable extends Migration
     {
         Schema::create('street_samples', function (Blueprint $table) {
             $table->id();
+            $table->json('sample');
+            $table->json('entry');
+            $table->json('departure');
             $table->timestamps();
         });
     }

@@ -177,7 +177,8 @@ return [
         App\Providers\GeographicServiceProvider::class,
         App\Providers\ControlServiceProvider::class,
         App\Providers\VisionServiceProvider::class,
-        App\Providers\GeneralServiceProvider::class
+        App\Providers\GeneralServiceProvider::class,
+        App\Providers\SimulationServiceProvider::class
 
     ],
 

@@ -8,10 +8,12 @@ use App\Events\Control\TrafficLight\NewSignal;
 use App\Interfaces\Control\TrafficLight\CreateTrafficLightInterface;
 use App\Models\Control\TrafficLight;
 use App\Models\General\History;
+use App\Models\Geographic\Street;
 use App\Repositories\Interfaces\Control\TrafficLightRepositoryInterface;
 use App\Repositories\Interfaces\General\HistoryRepositoryInterface;
 use App\Services\Interfaces\Control\TrafficLightServiceInterface;
 use App\Services\Interfaces\General\HistoryServiceInterface;
+use Illuminate\Support\Collection;
 
 class TrafficLightService implements TrafficLightServiceInterface
 {
@@ -60,5 +62,24 @@ class TrafficLightService implements TrafficLightServiceInterface
     {
         $history = $this->historyService->createHistory($light, History::UPDATE, new TrafficLightStatusHasChanged($from, $to));
         $this->historyRepository->saveHistory($history);
+    }
+    
+    /**
+     * @param TrafficLight[]|Collection $lights
+     * @param int $direction
+     * @return array
+     */
+    public function constructSample(array|Collection $lights, int $direction): array
+    {
+        $sample = [];
+        foreach ($lights as $light) {
+            $sample[$light->getId()] = [
+                'info' => $light->toArray(),
+                'streets' => $light->getStreets($direction)->map(fn(Street $street) => $street->toArray())
+            ];
+            
+        }
+        
+        return $sample;
     }
 }

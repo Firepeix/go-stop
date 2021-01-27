@@ -13,7 +13,7 @@ class TrafficLightFactory extends Factory
     public function definition()
     {
         return [
-            'street_id' => Street::factory(),
+            'id' => $this->faker->numberBetween(1, 500),
             'default_switch_time' => 3,
             'status' => TrafficLight::CLOSED
         ];

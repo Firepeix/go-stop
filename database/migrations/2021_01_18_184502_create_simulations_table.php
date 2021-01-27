@@ -15,6 +15,12 @@ class CreateSimulationsTable extends Migration
     {
         Schema::create('simulations', function (Blueprint $table) {
             $table->id();
+            $table->integer('vehicle_quantity');
+            $table->foreignId('sample_id');
+            $table->integer('min_second_interval');
+            $table->integer('max_second_interval');
+    
+            $table->foreign('sample_id')->references('id')->on('street_samples');
             $table->timestamps();
         });
     }

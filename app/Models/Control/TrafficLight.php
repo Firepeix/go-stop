@@ -6,6 +6,7 @@ use App\Interfaces\General\History\RegisterHistory;
 use App\Models\AbstractModel;
 use App\Models\Geographic\Street;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
 
 class TrafficLight extends AbstractModel implements RegisterHistory
 {
@@ -13,16 +14,20 @@ class TrafficLight extends AbstractModel implements RegisterHistory
     const WARNING = '1';
     const OPEN    = '2';
     
-    public function street(): BelongsTo
+    const INCOMING = 0;
+    const OUTGOING = 1;
+    
+    public function sdstreet(): BelongsTo
     {
         return $this->belongsTo(Street::class);
     }
     
     public static function create(int $streetId, int $defaultSwitchTime): self
     {
-        $light                    = new self();
-        $light->street_id         = $streetId;
-        $light->status            = self::CLOSED;
+        dd(213);
+        $light                      = new self();
+        $light->street_id           = $streetId;
+        $light->status              = self::CLOSED;
         $light->default_switch_time = $defaultSwitchTime;
         return $light;
     }
@@ -60,5 +65,23 @@ class TrafficLight extends AbstractModel implements RegisterHistory
     public function open(): void
     {
         $this->status = self::OPEN;
+    }
+    
+    public function getStreets(int $direction) : Collection
+    {
+        return $direction === TrafficLight::INCOMING ? $this->incomingStreets : $this->outgoingStreets;
+    }
+    
+    public static function getAvailableDirections() : array
+    {
+        return [TrafficLight::INCOMING, TrafficLight::OUTGOING];
+    }
+    
+    public function toArray(): array
+    {
+        return [
+            'defaultSwitchTime' => $this->getDefaultSwitchTime(),
+            'status'            => $this->getStatus()
+        ];
     }
 }
