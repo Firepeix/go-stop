@@ -12,6 +12,7 @@ class StreetSample extends AbstractModel
     private ? Collection $streets;
     private ? Collection $entryStreets;
     private ? Collection $departureStreets;
+    private Collection $routes;
     
     public function __construct(array $attributes = [])
     {
@@ -20,6 +21,7 @@ class StreetSample extends AbstractModel
         $this->streets = null;
         $this->entryStreets = null;
         $this->departureStreets = null;
+        $this->routes = new Collection();
     }
     
     public static function create(array $streetSample, Collection $entryStreets, Collection $departureStreets) : StreetSample
@@ -73,4 +75,62 @@ class StreetSample extends AbstractModel
         
         return $outsideStreets;
     }
+    
+    public function findRandomRoute() : Collection
+    {
+        if ($this->routes->isEmpty()) {
+            $entry = $this->getEntryStreets()->random();
+            $this->processRoutes(new Collection([$entry->getId()]));
+        }
+        return $this->routes->random();
+    }
+    
+    public function processRoutes(Collection $visited) : void
+    {
+        $departure = $this->getDepartureStreets()->random();
+        $streets = $this->getStreets()[$visited->last()]->getOutgoingStreetsId();
+        foreach ($streets as $street) {
+            if ($visited->search($street) !== false) {
+                continue;
+            }
+            if ($street === $departure->getId()) {
+                $visited->push($street);
+                $this->routes->push(clone $visited);
+                $visited->pop();
+                break;
+            }
+        }
+        foreach ($streets as $street) {
+            if ($visited->search($street) !== false || $street === $departure->getId()) {
+                continue;
+            }
+            
+            $visited->push($street);
+            $this->processRoutes($visited);
+            $visited->pop();
+        }
+        
+    }
+    
+    /*
+     * private void depthFirst(Graph graph, LinkedList<String> visited) {
+        LinkedList<String> nodes = graph.adjacentNodes(visited.getLast());
+        // examine adjacent nodes
+        for (String node : nodes) {
+            if (visited.contains(node) || node.equals(END)) {
+                continue;
+            }
+            visited.addLast(node);
+            depthFirst(graph, visited);
+            visited.removeLast();
+        }
+    }
+
+    private void printPath(LinkedList<String> visited) {
+        for (String node : visited) {
+            System.out.print(node);
+            System.out.print(" ");
+        }
+        System.out.println();
+    }*/
 }

@@ -13,7 +13,6 @@ class StreetTest extends TestCase
     {
         $stub = new StreetStub(5, [0 => [1,2], 1 => [2,0], 2 => [1], 3 => [1]], [0], [1], true);
         $streets = $stub->getStreets();
-       // dd($streets[1]->getStreets(TrafficLight::OUTGOING)->merge($streets[1]->getStreets(TrafficLight::INCOMING))->pluck('id'));
         $notConnectedStreet = $streets[4];
         $streets = $streets[0]->getConnectedStreets($streets);
         $this->assertEquals(4, $streets->count());
