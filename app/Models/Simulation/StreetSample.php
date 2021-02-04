@@ -4,6 +4,7 @@ namespace App\Models\Simulation;
 
 use App\Models\AbstractModel;
 use App\Simulation\Sample\Street;
+use App\Simulation\Sample\TrafficLight;
 use Illuminate\Support\Collection;
 
 class StreetSample extends AbstractModel
@@ -41,7 +42,10 @@ class StreetSample extends AbstractModel
         return $this->decodedSample;
     }
     
-    public function getStreets() : Collection
+    /**
+     * @return Collection|Street[]
+     */
+    public function getStreets() : Collection|array
     {
         if ($this->streets === null) {
             $this->streets = $this->getDecodedSample()->map(fn(array $street) => Street::Sample($street));
@@ -112,25 +116,19 @@ class StreetSample extends AbstractModel
         
     }
     
-    /*
-     * private void depthFirst(Graph graph, LinkedList<String> visited) {
-        LinkedList<String> nodes = graph.adjacentNodes(visited.getLast());
-        // examine adjacent nodes
-        for (String node : nodes) {
-            if (visited.contains(node) || node.equals(END)) {
-                continue;
-            }
-            visited.addLast(node);
-            depthFirst(graph, visited);
-            visited.removeLast();
-        }
+    public function getTrafficLight(string $isOn, string $goingTo) : TrafficLight
+    {
+        $actualStreet = $this->getStreets()[$isOn];
+        return $actualStreet->getTrafficLight($goingTo);
     }
-
-    private void printPath(LinkedList<String> visited) {
-        for (String node : visited) {
-            System.out.print(node);
-            System.out.print(" ");
+    
+    public function getTrafficLights() : Collection
+    {
+        $trafficLights = new Collection();
+        foreach ($this->getStreets() as $street) {
+            $trafficLights->put($street->getId(), $street->getOutgoingLights());
         }
-        System.out.println();
-    }*/
+        
+        return $trafficLights;
+    }
 }

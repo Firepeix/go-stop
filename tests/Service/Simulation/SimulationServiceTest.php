@@ -2,6 +2,7 @@
 
 namespace Tests\Service\Simulation;
 
+use App\Models\Simulation\Simulation;
 use App\Models\Simulation\StreetSample;
 use App\Services\Interfaces\Simulation\SimulationServiceInterface;
 use App\Simulation\Sample\Street;
@@ -55,5 +56,16 @@ class SimulationServiceTest extends TestCase
         $this->assertTrue($cars->isNotEmpty());
         $this->assertSame(1, $cars->count());
         $this->assertInstanceOf(Vehicle::class, $cars->first());
+    }
+    
+    public function testBeginSimulation()
+    {
+        $stub = new StreetStub(3, [0 => [1,2], 1 => [2,0], 2 => [1]], [0], [1]);
+        dump($stub->getStreets()->pluck('id'));
+        $sample = $this->service->createSample($stub->getStreets(), $stub->getEntryStreets(), $stub->getDepartureStreets());
+        $queue = $this->service->createVehicleQueue($sample, 3, [1, 2, 5]);
+        $simulation = $this->service->beginSimulation($sample, $queue);
+        $this->assertInstanceOf(Simulation::class, $simulation);
+        
     }
 }

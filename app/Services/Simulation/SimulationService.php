@@ -5,6 +5,7 @@ namespace App\Services\Simulation;
 
 
 use App\Lists\Queue;
+use App\Models\Simulation\Simulation;
 use App\Models\Simulation\StreetSample;
 use App\Services\Interfaces\Geographic\StreetServiceInterface;
 use App\Services\Interfaces\Simulation\SimulationServiceInterface;
@@ -36,5 +37,39 @@ class SimulationService implements SimulationServiceInterface
             $interval->enqueue($appearInterval[$i]);
         }
         return new VehicleQueue($vehicles, $interval, $durationOfTick);
+    }
+    
+    public function beginSimulation(StreetSample $sample, VehicleQueue $queue) : Simulation
+    {
+        $quantity = $queue->getTotalVehicles();
+        $finishedVehicles = new Collection();
+        $allVehiclesHistory = new Collection();
+        $vehicles = $queue->getVehicles();
+        $trafficLights = $sample->getTrafficLights();
+        while ($finishedVehicles->count() < $quantity) {
+            dump('Passou um Segundo');
+            $vehicles = $vehicles->merge($queue->getVehicles());
+            foreach ($vehicles as $id => $vehicle) {
+                if ($finishedVehicles->search($id) === false) {
+                    if ($vehicles[$id]->hasArrived()) {
+                        $finishedVehicles->push($id);
+                        $allVehiclesHistory->put($id, $vehicles[$id]);
+                    } else {
+                        $trafficLight = $trafficLights[$vehicle->isOn()][$vehicle->waitingOn()];
+                        if ($trafficLight->isOpen()) {
+                            $vehicles[$id]->advance();
+                            
+                        }
+                    }
+                }
+            }
+            
+            sleep(1);
+        }
+        
+        $resume = [
+            'vehicles' =>  $allVehiclesHistory->map(fn (Vehicle $vehicle) => $vehicle->getHistory())
+        ];
+        dd($resume);
     }
 }
