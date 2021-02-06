@@ -12,6 +12,7 @@ class VehicleQueue
 {
     private Queue  $vehicles;
     private Queue  $interval;
+    private Collection  $wholeIntervals;
     private float  $standardTickTime;
     private Carbon $relativeTime;
     private int    $totalVehicles;
@@ -21,6 +22,7 @@ class VehicleQueue
         $this->vehicles         = $vehicles;
         $this->totalVehicles    = $vehicles->count();
         $this->interval         = $interval;
+        $this->wholeIntervals   = $interval->toList();
         $this->standardTickTime = $standardTickTime;
         $this->relativeTime     = Carbon::now();
     }
@@ -64,5 +66,15 @@ class VehicleQueue
     public function getStandardTickTime(): float
     {
         return $this->standardTickTime;
+    }
+    
+    public function getMinSecondAppearInterval() : int
+    {
+        return $this->wholeIntervals->min();
+    }
+    
+    public function getMaxSecondAppearInterval() : int
+    {
+        return $this->wholeIntervals->max();
     }
 }

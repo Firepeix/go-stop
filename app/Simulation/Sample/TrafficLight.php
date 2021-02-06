@@ -5,6 +5,7 @@ namespace App\Simulation\Sample;
 
 use App\Models\Control\TrafficLight as TrafficLightModel;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class TrafficLight
 {
@@ -12,6 +13,7 @@ class TrafficLight
     private int $switchTime;
     private string $status;
     private Carbon $lastSwitchedTime;
+    private Collection $history;
     
     public function __construct(string $id, int $defaultSwitchTime)
     {
@@ -19,6 +21,7 @@ class TrafficLight
         $this->id = $id;
         $this->switchTime = $defaultSwitchTime;
         $this->status = TrafficLightModel::CLOSED;
+        $this->history     = new Collection();
     }
     
     private function checkTimer() : void
@@ -37,16 +40,19 @@ class TrafficLight
     
     private function warn()
     {
+        $this->history->push(['from' => $this->status, 'to' => TrafficLightModel::WARNING, 'time' => Carbon::now()->toDateTimeString()]);
         $this->status = TrafficLightModel::WARNING;
     }
     
     private function close() : void
     {
+        $this->history->push(['from' => $this->status, 'to' => TrafficLightModel::CLOSED, 'time' => Carbon::now()->toDateTimeString()]);
         $this->status = TrafficLightModel::CLOSED;
     }
     
     private function open() : void
     {
+        $this->history->push(['from' => $this->status, 'to' => TrafficLightModel::OPEN, 'time' => Carbon::now()->toDateTimeString()]);
         $this->status = TrafficLightModel::OPEN;
     }
     
@@ -60,5 +66,10 @@ class TrafficLight
     {
         $this->checkTimer();
         return $this->status === TrafficLightModel::CLOSED;
+    }
+    
+    public function getHistory(): array
+    {
+        return $this->history->toArray();
     }
 }

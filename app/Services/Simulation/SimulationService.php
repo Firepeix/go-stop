@@ -9,9 +9,11 @@ use App\Models\Simulation\Simulation;
 use App\Models\Simulation\StreetSample;
 use App\Services\Interfaces\Geographic\StreetServiceInterface;
 use App\Services\Interfaces\Simulation\SimulationServiceInterface;
+use App\Simulation\Sample\TrafficLight;
 use App\Simulation\Sample\Vehicle;
 use App\Simulation\VehicleQueue;
 use Illuminate\Support\Collection;
+use JetBrains\PhpStorm\ArrayShape;
 
 class SimulationService implements SimulationServiceInterface
 {
@@ -41,13 +43,20 @@ class SimulationService implements SimulationServiceInterface
     
     public function beginSimulation(StreetSample $sample, VehicleQueue $queue) : Simulation
     {
+        $lights = $sample->getTrafficLights();
         $quantity = $queue->getTotalVehicles();
+        $result = $this->simulate($lights, $queue, $quantity);
+        return Simulation::Create($queue, $sample, $result);
+    }
+    
+    #[ArrayShape(['vehicles' => "\Illuminate\Support\Collection", 'trafficLights' => "\Illuminate\Support\Collection"])]
+    public function simulate(Collection $trafficLights, VehicleQueue $queue, int $quantity) : array
+    {
         $finishedVehicles = new Collection();
         $allVehiclesHistory = new Collection();
         $vehicles = $queue->getVehicles();
-        $trafficLights = $sample->getTrafficLights();
+    
         while ($finishedVehicles->count() < $quantity) {
-            dump('Passou um Segundo');
             $vehicles = $vehicles->merge($queue->getVehicles());
             foreach ($vehicles as $id => $vehicle) {
                 if ($finishedVehicles->search($id) === false) {
@@ -58,18 +67,17 @@ class SimulationService implements SimulationServiceInterface
                         $trafficLight = $trafficLights[$vehicle->isOn()][$vehicle->waitingOn()];
                         if ($trafficLight->isOpen()) {
                             $vehicles[$id]->advance();
-                            
+                        
                         }
                     }
                 }
             }
-            
-            sleep(1);
+            sleep(0.9);
         }
         
-        $resume = [
-            'vehicles' =>  $allVehiclesHistory->map(fn (Vehicle $vehicle) => $vehicle->getHistory())
+        return [
+            'vehicles' =>  $allVehiclesHistory->map(fn (Vehicle $vehicle) => $vehicle->getHistory()),
+            'trafficLights' =>  $trafficLights->map(fn (Collection $onStreets) => $onStreets->map(fn (TrafficLight $light) => $light->getHistory()))
         ];
-        dd($resume);
     }
 }

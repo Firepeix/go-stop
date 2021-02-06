@@ -58,5 +58,9 @@ class Queue implements ArrayAccess
         return $this->items->isEmpty();
     }
     
+    public function toList() : Collection
+    {
+        return clone $this->items;
+    }
     
 }

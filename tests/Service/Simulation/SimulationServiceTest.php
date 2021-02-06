@@ -61,11 +61,15 @@ class SimulationServiceTest extends TestCase
     public function testBeginSimulation()
     {
         $stub = new StreetStub(3, [0 => [1,2], 1 => [2,0], 2 => [1]], [0], [1]);
-        dump($stub->getStreets()->pluck('id'));
         $sample = $this->service->createSample($stub->getStreets(), $stub->getEntryStreets(), $stub->getDepartureStreets());
+        $sample->id = 1;
         $queue = $this->service->createVehicleQueue($sample, 3, [1, 2, 5]);
         $simulation = $this->service->beginSimulation($sample, $queue);
         $this->assertInstanceOf(Simulation::class, $simulation);
-        
+        $this->assertSame(3, $simulation->getVehicleQuantity());
+        $this->assertSame(1, $simulation->getSampleId());
+        $this->assertSame(1, $simulation->getMinSecondInterval());
+        $this->assertSame(5, $simulation->getMaxSecondInterval());
+        $this->assertNotNull($simulation->getResult());
     }
 }
