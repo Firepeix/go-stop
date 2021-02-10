@@ -46,8 +46,14 @@ class StreetService implements StreetServiceInterface
         foreach ($streets as $street) {
             $sample[$street->getId()] = [
                 'info' => $street->toArray(),
-                TrafficLight::INCOMING => $this->service->constructSample($street->getTrafficLights(TrafficLight::INCOMING), TrafficLight::INCOMING),
-                TrafficLight::OUTGOING => $this->service->constructSample($street->getTrafficLights(TrafficLight::OUTGOING), TrafficLight::OUTGOING),
+                TrafficLight::INCOMING => [
+                    'directStreets' => $street->getStreets(TrafficLight::INCOMING)->map(fn(Street $street) => $street->toArray()),
+                    'throughTrafficLightsStreets' => $this->service->constructSample($street->getTrafficLights(TrafficLight::INCOMING), TrafficLight::INCOMING)
+                ],
+                TrafficLight::OUTGOING => [
+                    'directStreets' => $street->getStreets(TrafficLight::OUTGOING)->map(fn(Street $street) => $street->toArray()),
+                    'throughTrafficLightsStreets' => $this->service->constructSample($street->getTrafficLights(TrafficLight::OUTGOING), TrafficLight::OUTGOING)
+                ],
             ];
             
         }

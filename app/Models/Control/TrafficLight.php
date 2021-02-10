@@ -67,21 +67,27 @@ class TrafficLight extends AbstractModel implements RegisterHistory
         $this->status = self::OPEN;
     }
     
-    public function getStreets(int $direction) : Collection
+    public function getStreets(int $direction): Collection
     {
         return $direction === TrafficLight::INCOMING ? $this->incomingStreets : $this->outgoingStreets;
     }
     
-    public static function getAvailableDirections() : array
+    public static function getAvailableDirections(): array
     {
         return [TrafficLight::INCOMING, TrafficLight::OUTGOING];
+    }
+    
+    public function getGroupId(): int
+    {
+        return $this->group_id;
     }
     
     public function toArray(): array
     {
         return [
             'defaultSwitchTime' => $this->getDefaultSwitchTime(),
-            'status'            => $this->getStatus()
+            'status'            => $this->getStatus(),
+            'groupId'           => $this->getGroupId()
         ];
     }
 }

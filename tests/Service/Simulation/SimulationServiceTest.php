@@ -25,11 +25,11 @@ class SimulationServiceTest extends TestCase
     
     public function testCreateSample()
     {
-        $stub = new StreetStub(3, [0 => [1 => false,2 => false], 1 => [2 => false,0 => false], 2 => [1 => false]], [0], [1]);
-        $streets = $stub->getStreets();
-        $entryStreets = $stub->getEntryStreets();
+        $stub             = new StreetStub(3, [0 => [1 => 1, 2 => 2], 1 => [2 => 3, 0 => 4], 2 => [1 => 5]], [0], [1]);
+        $streets          = $stub->getStreets();
+        $entryStreets     = $stub->getEntryStreets();
         $departureStreets = $stub->getDepartureStreets();
-        $sample = $this->service->createSample($stub->getStreets(), $entryStreets, $departureStreets);
+        $sample           = $this->service->createSample($stub->getStreets(), $entryStreets, $departureStreets);
         $this->assertInstanceOf(StreetSample::class, $sample);
         $this->assertSame($streets->count(), $sample->getStreets()->count());
         $this->assertSame($entryStreets->count(), $sample->getEntryStreets()->count());
@@ -41,24 +41,44 @@ class SimulationServiceTest extends TestCase
     
     public function testCreateCrossRoadsSample()
     {
-        $stub = new StreetStub(4, [0 => [1 => true, 4 => false], 1 => [], 2 => [3 => true], 3 => [], 4 => []], [0], [1,3,4]);
-        $streets = $stub->getStreets();
-        $entryStreets = $stub->getEntryStreets();
+        $stub             = new StreetStub(5, [0 => [1 => 1, 4 => null], 1 => [], 2 => [3 => 1], 3 => [], 4 => []], [0], [1, 3, 4]);
+        $streets          = $stub->getStreets();
+        $entryStreets     = $stub->getEntryStreets();
         $departureStreets = $stub->getDepartureStreets();
-        $sample = $this->service->createSample($stub->getStreets(), $entryStreets, $departureStreets);
-        $sampleStreets = $sample->getStreets();
-        $lights = $sample->getTrafficLights();
-        $this->assertSame($lights->last()->getId(), $lights->first()->getOpposedTrafficLight());
-        $this->assertSame($lights->first()->getId(), $lights->last()->getOpposedTrafficLight());
-        $this->assertTrue($sampleStreets[$streets[0]->getId()]->hasTrafficLight($sampleStreets[$streets[1]->getId()]));
-        $this->assertFalse($sampleStreets[$streets[0]->getId()]->hasTrafficLight($sampleStreets[$streets[4]->getId()]));
+        $sample           = $this->service->createSample($stub->getStreets(), $entryStreets, $departureStreets);
+        $sampleStreets    = $sample->getStreets();
+        $lights           = $sample->getTrafficLights();
+        $this->assertTrue($lights->first()->first()->getOppositeTrafficLights()->search($lights->last()->first()->getId()) !== false);
+        $this->assertTrue($lights->last()->first()->getOppositeTrafficLights()->search($lights->first()->first()->getId()) !== false);
+        $this->assertTrue($sampleStreets[$streets[0]->getId()]->hasTrafficLight($sampleStreets[$streets[1]->getId()]->getId(), \App\Models\Control\TrafficLight::OUTGOING));
+        $this->assertFalse($sampleStreets[$streets[0]->getId()]->hasTrafficLight($sampleStreets[$streets[4]->getId()]->getId(), \App\Models\Control\TrafficLight::OUTGOING));
     }
     
     public function testCreateSimulationVehicleQueue()
     {
-        $stub = new StreetStub(3, [0 => [1 => false,2 => false], 1 => [2 => false,0 => false], 2 => [1 => false]], [0], [1]);
+        $stub   = new StreetStub(3, [0 => [1 => 1, 2 => 2], 1 => [2 => 3, 0 => 4], 2 => [1 => 5]], [0], [1]);
         $sample = $this->service->createSample($stub->getStreets(), $stub->getEntryStreets(), $stub->getDepartureStreets());
-        $queue = $this->service->createVehicleQueue($sample, 2, [1,3]);
+        $queue  = $this->service->createVehicleQueue($sample, 2, [1, 3]);
+        $this->assertInstanceOf(VehicleQueue::class, $queue);
+        $this->assertTrue($queue->getVehicles()->isEmpty());
+        sleep(2);
+        $cars = $queue->getVehicles();
+        $this->assertTrue($cars->isNotEmpty());
+        $this->assertSame(1, $cars->count());
+        $this->assertInstanceOf(Vehicle::class, $cars->first());
+        $this->assertTrue($queue->getVehicles()->isEmpty());
+        sleep(2);
+        $cars = $queue->getVehicles();
+        $this->assertTrue($cars->isNotEmpty());
+        $this->assertSame(1, $cars->count());
+        $this->assertInstanceOf(Vehicle::class, $cars->first());
+    }
+    
+    public function testCreateSimulationVehicleQueueCrossRoads()
+    {
+        $stub   = new StreetStub(5, [0 => [1 => 1, 4 => null], 1 => [], 2 => [3 => 1], 3 => [], 4 => []], [0], [1, 3, 4]);
+        $sample = $this->service->createSample($stub->getStreets(), $stub->getEntryStreets(), $stub->getDepartureStreets());
+        $queue  = $this->service->createVehicleQueue($sample, 2, [1, 3]);
         $this->assertInstanceOf(VehicleQueue::class, $queue);
         $this->assertTrue($queue->getVehicles()->isEmpty());
         sleep(2);
@@ -76,10 +96,25 @@ class SimulationServiceTest extends TestCase
     
     public function testBeginSimulation()
     {
-        $stub = new StreetStub(3, [0 => [1 => false,2 => false], 1 => [2 => false,0 => false], 2 => [1 => false]], [0], [1]);
-        $sample = $this->service->createSample($stub->getStreets(), $stub->getEntryStreets(), $stub->getDepartureStreets());
+        $stub       = new StreetStub(3, [0 => [1 => 1, 2 => 2], 1 => [2 => 3, 0 => 4], 2 => [1 => 5]], [0], [1]);
+        $sample     = $this->service->createSample($stub->getStreets(), $stub->getEntryStreets(), $stub->getDepartureStreets());
         $sample->id = 1;
-        $queue = $this->service->createVehicleQueue($sample, 3, [1, 2, 5]);
+        $queue      = $this->service->createVehicleQueue($sample, 3, [1, 2, 5]);
+        $simulation = $this->service->beginSimulation($sample, $queue);
+        $this->assertInstanceOf(Simulation::class, $simulation);
+        $this->assertSame(3, $simulation->getVehicleQuantity());
+        $this->assertSame(1, $simulation->getSampleId());
+        $this->assertSame(1, $simulation->getMinSecondInterval());
+        $this->assertSame(5, $simulation->getMaxSecondInterval());
+        $this->assertNotNull($simulation->getResult());
+    }
+    
+    public function testBeginSimulationCrossRoads()
+    {
+        $stub       = new StreetStub(3, [0 => [1 => 1, 2 => 2], 1 => [2 => 3, 0 => 4], 2 => [1 => 5]], [0], [1]);
+        $sample     = $this->service->createSample($stub->getStreets(), $stub->getEntryStreets(), $stub->getDepartureStreets());
+        $sample->id = 1;
+        $queue      = $this->service->createVehicleQueue($sample, 3, [1, 2, 5]);
         $simulation = $this->service->beginSimulation($sample, $queue);
         $this->assertInstanceOf(Simulation::class, $simulation);
         $this->assertSame(3, $simulation->getVehicleQuantity());

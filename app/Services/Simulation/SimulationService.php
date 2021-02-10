@@ -64,8 +64,8 @@ class SimulationService implements SimulationServiceInterface
                         $finishedVehicles->push($id);
                         $allVehiclesHistory->put($id, $vehicles[$id]);
                     } else {
-                        $trafficLight = $trafficLights[$vehicle->isOn()][$vehicle->waitingOn()];
-                        if ($trafficLight->isOpen()) {
+                        $trafficLight = $trafficLights[$vehicle->isOn()][$vehicle->waitingOn()] ?? null;
+                        if ($trafficLight === null || $trafficLight->isOpen()) {
                             $vehicles[$id]->advance();
                         
                         }

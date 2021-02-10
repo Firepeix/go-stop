@@ -24,16 +24,21 @@ class Street
         $this->incomingLights = new Collection();
     }
     
-    public static function Sample(array $sample) : Street
+    public static function Sample(array $sample, Collection $fullSample) : Street
     {
         $sampleStreet =  new Street($sample['info']['id'], $sample['info']['name']);
         foreach (TrafficLightModel::getAvailableDirections() as $availableDirection) {
             $type = $availableDirection === TrafficLightModel::OUTGOING ? 'outgoing' : 'incoming';
-            foreach ($sample[$availableDirection] as $lightId => $light) {
+            $connections = $sample[$availableDirection];
+            foreach ($connections['throughTrafficLightsStreets'] as $lightId => $light) {
                 foreach ($light['streets'] as $street) {
-                    $sampleStreet->{"{$type}Lights"}->put("{$street['id']}", new TrafficLight($lightId, $light['info']['defaultSwitchTime']));
+                    $sampleStreet->{"{$type}Lights"}->put("{$street['id']}", TrafficLight::Sample($lightId, $light, $fullSample));
                     $sampleStreet->{$type}->push($street['id']);
                 }
+            }
+    
+            foreach ($connections['directStreets'] as $street) {
+                $sampleStreet->{$type}->push($street['id']);
             }
         }
         return $sampleStreet;
@@ -62,5 +67,12 @@ class Street
     public function getOutgoingLights() : Collection
     {
         return $this->outgoingLights;
+    }
+    
+    public function hasTrafficLight(int $streetId, int $direction) : bool
+    {
+        $type = $direction === TrafficLightModel::OUTGOING ? 'outgoing' : 'incoming';
+    
+        return isset($this->{"{$type}Lights"}[$streetId]);
     }
 }

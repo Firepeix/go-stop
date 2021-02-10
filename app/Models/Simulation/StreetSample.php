@@ -48,7 +48,8 @@ class StreetSample extends AbstractModel
     public function getStreets() : Collection|array
     {
         if ($this->streets === null) {
-            $this->streets = $this->getDecodedSample()->map(fn(array $street) => Street::Sample($street));
+            $sample = $this->getDecodedSample();
+            $this->streets = $this->getDecodedSample()->map(fn(array $street) => Street::Sample($street, $sample));
         }
         return $this->streets;
     }
@@ -126,7 +127,9 @@ class StreetSample extends AbstractModel
     {
         $trafficLights = new Collection();
         foreach ($this->getStreets() as $street) {
-            $trafficLights->put($street->getId(), $street->getOutgoingLights());
+            if ($street->getOutgoingLights()->isNotEmpty()) {
+                $trafficLights->put($street->getId(), $street->getOutgoingLights());
+            }
         }
         
         return $trafficLights;

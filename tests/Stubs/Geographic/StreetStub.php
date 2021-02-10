@@ -39,17 +39,16 @@ class StreetStub
     {
         foreach ($this->streets as $key => $street) {
            if (isset($connections[$key])) {
-               foreach ($connections[$key] as $connection => $hasTrafficLight) {
-                   if ($hasTrafficLight) {
-                       $incomingTrafficLight = TrafficLight::factory()->make();
-                       $outgoingTrafficLight = TrafficLight::factory()->make();
-                       $incomingTrafficLight->incomingStreets = new Collection([$this->streets[$key]]);
-                       $outgoingTrafficLight->outgoingStreets = new Collection([$this->streets[$connection]]);
-                       $this->streets[$connection]->incomingTrafficLights->push($incomingTrafficLight);
-                       $this->streets[$key]->outgoingTrafficLights->push($outgoingTrafficLight);
+               foreach ($connections[$key] as $connection => $lightGroupId) {
+                   if ($lightGroupId !== null) {
+                       $trafficLight = TrafficLight::factory()->make(['group_id' => $lightGroupId]);
+                       $trafficLight->incomingStreets = new Collection([$this->streets[$key]]);
+                       $trafficLight->outgoingStreets = new Collection([$this->streets[$connection]]);
+                       $this->streets[$connection]->incomingTrafficLights->push($trafficLight);
+                       $this->streets[$key]->outgoingTrafficLights->push($trafficLight);
                    }
                   
-                   if ($directConnection || !$hasTrafficLight) {
+                   if ($directConnection || $lightGroupId === null) {
                        $this->streets[$connection]->incomingStreets->push($this->streets[$key]);
                        $this->streets[$key]->outgoingStreets->push($this->streets[$connection]);
                    }
