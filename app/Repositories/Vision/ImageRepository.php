@@ -6,13 +6,20 @@ namespace App\Repositories\Vision;
 
 use App\Models\Vision\Image;
 use App\Primitives\File;
+use App\Repositories\AbstractRepository;
 use App\Repositories\Interfaces\Vision\ImageRepositoryInterface;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
-class ImageRepository implements ImageRepositoryInterface
+class ImageRepository extends AbstractRepository implements ImageRepositoryInterface
 {
     private Filesystem $storage;
+    
+    public function index(): Collection
+    {
+        return parent::rawIndex(new Image());
+    }
     
     public function __construct(Storage $storage)
     {
@@ -22,11 +29,6 @@ class ImageRepository implements ImageRepositoryInterface
     public function findOrFail(int $id): Image
     {
         return Image::findOrFail($id);
-    }
-    
-    public function saveImage(Image $image): void
-    {
-        $image->save();
     }
     
     public function storeFile(int $cameraId, string $date, string $hour, File $file): string

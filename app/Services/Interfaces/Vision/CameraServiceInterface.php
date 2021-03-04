@@ -13,4 +13,6 @@ interface CameraServiceInterface
     public function createCamera(CreateCameraInterface $createCamera) : Camera;
     
     public function captureImages(Camera $camera, int $imagesQuantity, int $secondsPerFrame) : Collection;
+    
+    public function beginCaptureImages(Camera $camera, int $secondsPerFrame) : void;
 }

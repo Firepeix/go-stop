@@ -21,7 +21,6 @@ class CreateSimulationsTable extends Migration
             $table->integer('max_second_interval');
             $table->json('result')->nullable();
     
-            $table->foreign('sample_id')->references('id')->on('street_samples');
             $table->timestamps();
         });
     }

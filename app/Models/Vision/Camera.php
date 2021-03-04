@@ -2,7 +2,6 @@
 
 namespace App\Models\Vision;
 
-use App\Interfaces\Vision\Camera\Parsers\CameraImageParser;
 use App\Interfaces\Vision\CreateCameraInterface;
 use App\Models\AbstractModel;
 use App\Models\Control\TrafficLight;
@@ -10,6 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Camera extends AbstractModel
 {
+    const SAMPLE_CAMERA = 1;
+    const TRAFFIC_LIGHT_CAMERA = 2;
+    
     public function trafficLight() : BelongsTo
     {
         return $this->belongsTo(TrafficLight::class);
@@ -36,5 +38,15 @@ class Camera extends AbstractModel
     public function getCameraView() : string
     {
         return $this->camera_view;
+    }
+    
+    public static function getCameraTypes() : array
+    {
+        return [self::SAMPLE_CAMERA, self::TRAFFIC_LIGHT_CAMERA];
+    }
+    
+    public function isRecording() : bool
+    {
+        return $this->recording === 1;
     }
 }

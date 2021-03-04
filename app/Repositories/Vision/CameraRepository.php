@@ -4,11 +4,17 @@
 namespace App\Repositories\Vision;
 
 use App\Models\Vision\Camera;
+use App\Repositories\AbstractRepository;
 use App\Repositories\Interfaces\Vision\CameraRepositoryInterface;
 use Illuminate\Support\Collection;
 
-class CameraRepository implements CameraRepositoryInterface
+class CameraRepository extends AbstractRepository implements CameraRepositoryInterface
 {
+    public function index(): Collection
+    {
+        return parent::rawIndex(new Camera());
+    }
+    
     public function findOrFail(int $id): Camera
     {
         return Camera::findOrFail($id);

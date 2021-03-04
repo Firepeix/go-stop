@@ -82,10 +82,22 @@ class DiaOnlineParser implements CameraImageParser
             $path = $this->sessionId;
             $rawImages = storage_path('app/raw-images/' . $this->sessionId);
         }
-        
-        $filePaths = $storage->files($path);
+    
+        $filePaths = $this->orderFilesIndex(new Collection($storage->files($path)));
         foreach ($filePaths as $filePath) {
             $this->files->push(new File("$rawImages/" . collect(explode('/', $filePath))->last()));
         }
+    }
+    
+    private function orderFilesIndex(Collection $files) : Collection
+    {
+        return $files->sort(function (string $fileA, string $fileB) {
+            $a = new Collection(explode('/', $fileA));
+            $b = new Collection(explode('/', $fileB));
+            $indexA = (int) str_replace('.txt', '', $a->last());
+            $indexB = (int) str_replace('.txt', '', $b->last());
+            
+            return $indexA < $indexB ? -1 : 1;
+        });
     }
 }

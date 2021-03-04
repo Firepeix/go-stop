@@ -4,10 +4,11 @@ const nightwatch = require('nightwatch');
 const config = require('../../../nightwatch.conf.js');
 const app = express();
 app.use(express.json());
-
 router.post('/get-camera', async (request, response) => {
   try {
+    console.log(`Novo Request ID: ${request.body.id} Session ID: ${request.body.sessionId}`);
     await getSnapshot(request.body.id, request.body.sessionId, request.body.frames, request.body.secondsPerFrame);
+    console.log('Finalizado');
   } catch (e) {
     console.log(e);
   }
@@ -37,11 +38,13 @@ async function getSnapshot (id, sessionId, frames, secondsPerFrame) {
             .startWebDriver()
             .catch(err => {
               resolve();
+              console.log(err);
             })
             .then(() => {
               return runner.runTests();
             })
             .catch(err => {
+              console.log(err);
               resolve();
             })
             .then(() => {
@@ -49,6 +52,7 @@ async function getSnapshot (id, sessionId, frames, secondsPerFrame) {
               resolve();
             })
             .catch(err => {
+              console.log(err);
               resolve();
             });
       });

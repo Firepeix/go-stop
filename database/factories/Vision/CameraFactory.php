@@ -2,7 +2,7 @@
 
 namespace Database\Factories\Vision;
 
-use App\Models\Control\TrafficLight;
+use App\Models\Geographic\Sample;
 use App\Models\Vision\Camera;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -14,8 +14,9 @@ class CameraFactory extends Factory
     {
         return [
             'id' => 1,
-            'traffic_light_id' => TrafficLight::factory(),
-            'camera_view' => 'diaonline'
+            'entity_id' => Sample::factory(),
+            'camera_view' => 'diaonline',
+            'type' => Camera::SAMPLE_CAMERA
         ];
     }
 }

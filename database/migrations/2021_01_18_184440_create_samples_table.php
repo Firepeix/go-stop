@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateStreetSamplesTable extends Migration
+class CreateSamplesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class CreateStreetSamplesTable extends Migration
      */
     public function up()
     {
-        Schema::create('street_samples', function (Blueprint $table) {
+        Schema::create('samples', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('link');
             $table->json('sample');
             $table->json('entry');
             $table->json('departure');

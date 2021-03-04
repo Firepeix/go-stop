@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Models\Simulation;
+namespace App\Models\Geographic;
 
 use App\Models\AbstractModel;
+use App\Models\Vision\Camera;
 use App\Simulation\Sample\Street;
 use App\Simulation\Sample\TrafficLight;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
-class StreetSample extends AbstractModel
+class Sample extends AbstractModel
 {
     private ? Collection $decodedSample;
     private ? Collection $streets;
@@ -25,12 +27,17 @@ class StreetSample extends AbstractModel
         $this->routes = new Collection();
     }
     
-    public static function create(array $streetSample, Collection $entryStreets, Collection $departureStreets) : StreetSample
+    public function camera() : HasOne
     {
-        $sample = new StreetSample();
+        return $this->hasOne(Camera::class, 'entity_id')->where('type', Camera::SAMPLE_CAMERA);
+    }
+    
+    public static function create(array $payload, Collection $entryStreets, Collection $departureStreets) : sample
+    {
+        $sample = new Sample();
         $sample->entries = json_encode($entryStreets->pluck('id')->toArray());
         $sample->departures = json_encode($departureStreets->pluck('id')->toArray());
-        $sample->sample = json_encode($streetSample);
+        $sample->sample = json_encode($payload);
         return $sample;
     }
     
@@ -133,5 +140,35 @@ class StreetSample extends AbstractModel
         }
         
         return $trafficLights;
+    }
+    
+    public function getName() : string
+    {
+        return $this->name;
+    }
+    
+    public function getCameraLink() : string
+    {
+        return $this->link;
+    }
+    
+    public function getPayload() : string
+    {
+        return $this->sample;
+    }
+    
+    public function getRawDepartureStreets() : string
+    {
+        return $this->departure;
+    }
+    
+    public function getRawEntryStreets() : string
+    {
+        return $this->entry;
+    }
+    
+    public function getCamera() : Camera
+    {
+        return $this->camera;
     }
 }

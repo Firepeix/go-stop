@@ -30,5 +30,6 @@ module.exports = {
 };
 
 function storeImage (sessionCameraId, index, value) {
+  console.log(index);
   fs.writeFileSync(`./storage/app/raw-images/${sessionCameraId}/${index}.txt`, value);
 }

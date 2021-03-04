@@ -4,10 +4,12 @@
 namespace App\Services\Vision;
 
 
+use App\Events\Vision\Camera\StartRecording;
 use App\Interfaces\Vision\Camera\Parsers\CameraImageParser;
 use App\Interfaces\Vision\CreateCameraInterface;
 use App\Models\Vision\Camera;
 use App\Primitives\File;
+use App\Repositories\Interfaces\Vision\CameraRepositoryInterface;
 use App\Services\Interfaces\Vision\CameraServiceInterface;
 use App\Services\Interfaces\Vision\ImageServiceInterface;
 use App\Vision\Camera\Parsers\DiaOnlineParser;
@@ -16,10 +18,12 @@ use Illuminate\Support\Collection;
 class CameraService implements CameraServiceInterface
 {
     private ImageServiceInterface $imageService;
+    private CameraRepositoryInterface $repository;
     
-    public function __construct(ImageServiceInterface $imageService)
+    public function __construct(ImageServiceInterface $imageService, CameraRepositoryInterface $repository)
     {
         $this->imageService = $imageService;
+        $this->repository = $repository;
     }
     
     public function createCamera(CreateCameraInterface $createCamera): Camera
@@ -33,6 +37,13 @@ class CameraService implements CameraServiceInterface
         $images = $this->createImagesFromBase64Files($camera, $parser->captureFiles($imagesQuantity, $secondsPerFrame));
         $parser->closesSession();
         return $images;
+    }
+    
+    public function beginCaptureImages(Camera $camera, int $secondsPerFrame): void
+    {
+        $camera->recording = true;
+        $this->repository->save($camera);
+        event(new StartRecording($camera, $secondsPerFrame));
     }
     
     /**
