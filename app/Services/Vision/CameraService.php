@@ -46,6 +46,12 @@ class CameraService implements CameraServiceInterface
         event(new StartRecording($camera, $secondsPerFrame));
     }
     
+    public function stopCaptureImages(Camera $camera): void
+    {
+        $camera->recording = false;
+        $this->repository->save($camera);
+    }
+    
     /**
      * @param Camera     $camera
      * @param Collection|File[] $files

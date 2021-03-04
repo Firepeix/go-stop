@@ -12,6 +12,9 @@ class Camera extends AbstractModel
     const SAMPLE_CAMERA = 1;
     const TRAFFIC_LIGHT_CAMERA = 2;
     
+    const STOP_RECORDING = 0;
+    const START_RECORDING = 1;
+    
     public function trafficLight() : BelongsTo
     {
         return $this->belongsTo(TrafficLight::class);

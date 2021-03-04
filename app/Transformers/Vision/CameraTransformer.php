@@ -19,7 +19,7 @@ class CameraTransformer extends Transformer
         return $this->change($camera, [
             'protocol' => NumberPrimitive::toProtocol($camera->getId()),
             'view' => $camera->getCameraView(),
-            'trafficLightId' => $camera->getTrafficLightId()
+            'isRecording' => $camera->isRecording(),
         ]);
     }
     

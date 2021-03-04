@@ -15,4 +15,6 @@ interface CameraServiceInterface
     public function captureImages(Camera $camera, int $imagesQuantity, int $secondsPerFrame) : Collection;
     
     public function beginCaptureImages(Camera $camera, int $secondsPerFrame) : void;
+    
+    public function stopCaptureImages(Camera $camera) : void;
 }
