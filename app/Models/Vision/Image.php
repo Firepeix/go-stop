@@ -3,9 +3,9 @@
 namespace App\Models\Vision;
 
 
-use App\Interfaces\Vision\CreateImageInterface;
 use App\Models\AbstractModel;
 use App\Primitives\File;
+use Illuminate\Support\Collection;
 
 class Image extends AbstractModel
 {
@@ -36,11 +36,28 @@ class Image extends AbstractModel
     public function getFile() : File
     {
         if ($this->file === null) {
-            $localPath = $this->path !== null ? storage_path("app/$this->path") : $this->tmpPath;
+            $localPath = $this->path !== null ? storage_path("app/camera-images/$this->path") : $this->tmpPath;
             $this->file = new File($localPath);
         }
         
         return $this->file;
+    }
+    
+    public function replaceFile(string $path) : File
+    {
+        $this->file = new File($path);
+        $this->path = str_replace('/application/storage/app/camera-images/', '', $path);
+        return $this->file;
+    }
+    
+    public function getCroppedFileName() : string
+    {
+        $path = new Collection(explode("/", storage_path("app/camera-images/$this->path")));
+        $name = preg_replace('/\..+/', '', $path->last());
+        $name = "cropped-{$name}." . preg_replace('/.+\./', '', $path->last());
+        $lastKey = $path->keys()->last();
+        $path[$lastKey] = $name;
+        return $path->join('/');
     }
     
     public function process(int $quantity) : void

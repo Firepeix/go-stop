@@ -15,6 +15,11 @@ class CameraRepository extends AbstractRepository implements CameraRepositoryInt
         return parent::rawIndex(new Camera());
     }
     
+    public function first() : Camera
+    {
+        return parent::rawFirst(new Camera());
+    }
+    
     public function findOrFail(int $id): Camera
     {
         return Camera::findOrFail($id);

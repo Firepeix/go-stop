@@ -5,10 +5,10 @@ namespace App\Services\Interfaces\Vision;
 
 
 
-use App\Interfaces\Vision\CreateImageInterface;
 use App\Models\Vision\Camera;
 use App\Models\Vision\Image;
 use App\Primitives\File;
+use App\Primitives\Position;
 
 interface ImageServiceInterface
 {
@@ -16,5 +16,5 @@ interface ImageServiceInterface
     
     public function storeImage(Image $image) : string;
     
-    public function processImage(Image $image) : void;
+    public function processImage(Image $image, Position $upperBoundLimit = null, Position $lowerBoundLimit = null) : void;
 }

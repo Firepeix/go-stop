@@ -3,10 +3,10 @@
 
 namespace App\Services\Vision;
 
-use App\Interfaces\Vision\CreateImageInterface;
 use App\Models\Vision\Camera;
 use App\Models\Vision\Image;
 use App\Primitives\File;
+use App\Primitives\Position;
 use App\Repositories\Interfaces\Vision\ImageRepositoryInterface;
 use App\Services\Interfaces\Vision\ImageLearningMachineServiceInterface;
 use App\Services\Interfaces\Vision\ImageServiceInterface;
@@ -26,7 +26,7 @@ class ImageService implements ImageServiceInterface
     public function storeImage(Image $image) : string
     {
         $date = Carbon::now();
-        $path = $this->repository->storeFile($image->getCameraId(), $date->format('Y-m-d'), $date->format('H'),$image->getFile());
+        $path = $this->repository->storeFile($image->getCameraId(), $date->format('Y-m-d'), $date->format('H'), $image->getFile());
         $image->path = $path;
         return $path;
     }
@@ -36,9 +36,25 @@ class ImageService implements ImageServiceInterface
         return Image::create($camera, $file);
     }
     
-    public function processImage(Image $image): void
+    public function processImage(Image $image, Position $upperBoundLimit = null, Position $lowerBoundLimit = null): void
     {
+        if ($upperBoundLimit !== null && $lowerBoundLimit !== null) {
+            $image = $this->cutImage($image, $upperBoundLimit, $lowerBoundLimit);
+        }
         $quantity = $this->service->getQuantityOfVehicles($image);
         $image->process($quantity);
+    }
+    
+    private function cutImage(Image $image, Position $upperBoundLimit, Position $lowerBoundLimit) : Image
+    {
+        $rawImage = imagecreatefrompng($image->getFile());
+        $width = $lowerBoundLimit->getX() - $upperBoundLimit->getX();
+        $height = $lowerBoundLimit->getY() - $upperBoundLimit->getY();
+        $croppedImage = imagecrop($rawImage, ['x' => $upperBoundLimit->getX(), 'y' => $upperBoundLimit->getY(), 'width' => $width, 'height' => $height]);
+        $path = $image->getCroppedFileName();
+        imagepng($croppedImage, $path);
+        $image->replaceFile($path);
+        
+        return $image;
     }
 }

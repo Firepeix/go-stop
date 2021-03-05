@@ -20,6 +20,11 @@ abstract class AbstractRepository implements RepositoryInterface
         return $model::findOrFail($id);
     }
     
+    public function rawFirst(Model $model)
+    {
+        return $model::first();
+    }
+    
     public function save(Model $model) : void
     {
         $model->save();

@@ -4,10 +4,9 @@
 namespace App\Interfaces\Vision\Fate;
 
 
-use JetBrains\PhpStorm\ArrayShape;
+use Illuminate\Support\Collection;
 
 interface FatePredictResponseInterface
 {
-    #[ArrayShape(['label' => "string", 'probability' => "float"])]
-    public function getObjectsFound() : array;
+    public function getObjectsFound() : Collection;
 }

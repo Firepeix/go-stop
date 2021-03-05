@@ -20,6 +20,6 @@ class Fate
     public function processFile(File $file) : FatePredictResponseInterface
     {
         $response = $this->client->post('/predict', ['multipart' => [['name' => 'image', 'contents' => fopen($file->path(), 'r')]]]);
-        return new PredictResponse(json_decode($response->getBody()));
+        return new PredictResponse(json_decode($response->getBody(), true));
     }
 }

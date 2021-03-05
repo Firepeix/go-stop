@@ -21,6 +21,11 @@ class ImageRepository extends AbstractRepository implements ImageRepositoryInter
         return parent::rawIndex(new Image());
     }
     
+    public function first() : Image
+    {
+        return parent::rawFirst(new Image());
+    }
+    
     public function __construct(Storage $storage)
     {
         $this->storage = $storage::disk('camera-images');
