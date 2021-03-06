@@ -8,6 +8,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method static first()
+ */
 abstract class AbstractModel extends Model
 {
     use HasFactory;

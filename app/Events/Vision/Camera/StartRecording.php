@@ -12,21 +12,14 @@ class StartRecording
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     private Camera $camera;
-    private int $secondsPerFrame;
     
-    public function __construct(Camera $camera, int $secondsPerFrame)
+    public function __construct(Camera $camera)
     {
         $this->camera   = $camera;
-        $this->secondsPerFrame  = $secondsPerFrame;
     }
     
     public function getCamera(): Camera
     {
         return $this->camera;
-    }
-    
-    public function getSecondsPerFrame(): int
-    {
-        return $this->secondsPerFrame;
     }
 }

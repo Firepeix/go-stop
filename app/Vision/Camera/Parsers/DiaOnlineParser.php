@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -44,9 +45,9 @@ class DiaOnlineParser implements CameraImageParser
         $this->sessionId = $id;
     }
     
-    public function captureFiles(int $frames, int $secondsPerFrame): Collection
+    public function captureFiles(int $frames): Collection
     {
-        $this->openSession($frames, $secondsPerFrame);
+        $this->openSession($frames);
         $this->loadFiles();
         return $this->files;
     }
@@ -56,18 +57,21 @@ class DiaOnlineParser implements CameraImageParser
         $this->rawImagesStorage->deleteDirectory($this->sessionId);
     }
     
-    private function openSession(int $frames, int $secondsPerFrame): void
+    private function openSession(int $frames): void
     {
         $this->files = new Collection();
         if (!$this->sandbox) {
-            $this->client->post('/get-camera', [
-                'json' => [
-                    'id' => $this->cameraId,
-                    'sessionId' => $this->sessionId,
-                    'frames' => $frames - 1,
-                    'secondsPerFrame' => $secondsPerFrame
-                ]
-            ]);
+            try {
+                $this->client->post('/get-camera', [
+                    'json' => [
+                        'id' => $this->cameraId,
+                        'sessionId' => $this->sessionId,
+                        'frames' => $frames - 1
+                    ]
+                ]);
+            } catch (\Exception $exception) {
+                Log::info('Empty Message');
+            }
         }
     }
     

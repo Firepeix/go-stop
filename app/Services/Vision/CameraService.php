@@ -31,19 +31,19 @@ class CameraService implements CameraServiceInterface
         return Camera::create($createCamera);
     }
     
-    public function captureImages(Camera $camera, int $imagesQuantity, int $secondsPerFrame): Collection
+    public function captureImages(Camera $camera, int $imagesQuantity): Collection
     {
         $parser = $this->findParser($camera);
-        $images = $this->createImagesFromBase64Files($camera, $parser->captureFiles($imagesQuantity, $secondsPerFrame));
+        $images = $this->createImagesFromBase64Files($camera, $parser->captureFiles($imagesQuantity));
         $parser->closesSession();
         return $images;
     }
     
-    public function beginCaptureImages(Camera $camera, int $secondsPerFrame): void
+    public function beginCaptureImages(Camera $camera): void
     {
         $camera->recording = true;
         $this->repository->save($camera);
-        event(new StartRecording($camera, $secondsPerFrame));
+        event(new StartRecording($camera));
     }
     
     public function stopCaptureImages(Camera $camera): void

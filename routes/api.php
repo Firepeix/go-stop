@@ -19,4 +19,5 @@ Route::prefix('streets')->group(function () {
 
 Route::prefix('samples')->group(function () {
     Route::post('{sampleId}/record', SampleController::class . '@record');
+    Route::get('{sampleId}/get-rate', SampleController::class . '@getRate');
 });

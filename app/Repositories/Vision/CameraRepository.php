@@ -3,13 +3,21 @@
 
 namespace App\Repositories\Vision;
 
+use App\Models\AbstractModel;
 use App\Models\Vision\Camera;
 use App\Repositories\AbstractRepository;
 use App\Repositories\Interfaces\Vision\CameraRepositoryInterface;
 use Illuminate\Support\Collection;
+use JetBrains\PhpStorm\Pure;
 
 class CameraRepository extends AbstractRepository implements CameraRepositoryInterface
 {
+    #[Pure]
+    protected function getModel(): AbstractModel
+    {
+        return new Camera();
+    }
+    
     public function index(): Collection
     {
         return parent::rawIndex(new Camera());
@@ -17,7 +25,7 @@ class CameraRepository extends AbstractRepository implements CameraRepositoryInt
     
     public function first() : Camera
     {
-        return parent::rawFirst(new Camera());
+        return parent::first();
     }
     
     public function findOrFail(int $id): Camera

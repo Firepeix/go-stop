@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 interface CameraImageParser
 {
-    public function captureFiles(int $frames, int $secondsPerFrame) : Collection;
+    public function captureFiles(int $frames) : Collection;
     
     public function closesSession(): void;
 }

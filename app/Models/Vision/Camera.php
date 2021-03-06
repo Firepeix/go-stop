@@ -6,6 +6,8 @@ use App\Interfaces\Vision\CreateCameraInterface;
 use App\Models\AbstractModel;
 use App\Models\Control\TrafficLight;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 class Camera extends AbstractModel
 {
@@ -15,9 +17,9 @@ class Camera extends AbstractModel
     const STOP_RECORDING = 0;
     const START_RECORDING = 1;
     
-    public function trafficLight() : BelongsTo
+    public function images() : HasMany
     {
-        return $this->belongsTo(TrafficLight::class);
+        return $this->hasMany(Image::class);
     }
     
     public static function create(CreateCameraInterface $createCamera) : Camera
@@ -28,9 +30,9 @@ class Camera extends AbstractModel
         return $camera;
     }
     
-    public function getTrafficLight() : TrafficLight
+    public function getImages() : Collection
     {
-        return $this->trafficLight;
+        return $this->images;
     }
     
     public function getTrafficLightId() : int

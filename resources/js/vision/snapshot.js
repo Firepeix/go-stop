@@ -5,7 +5,8 @@ module.exports = {
     const id = browser.options.test_settings.cameraId;
     const cameraSessionId = browser.options.test_settings.cameraSessionId;
     const maxSnaps = browser.options.test_settings.frames;
-    const secondsPerFrame = browser.options.test_settings.secondsPerFrame !== undefined ? browser.options.test_settings.secondsPerFrame : 1050
+    const secondsPerFrame = 1050
+
     browser
       .url('http://localhost/web/snapshot/' + id)
       .waitForElementVisible('.rmp-button', 10 * 1000)

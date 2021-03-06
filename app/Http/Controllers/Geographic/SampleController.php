@@ -42,4 +42,11 @@ class SampleController extends Controller
         $success = $this->service->record($sample, $this->request->get('action'));
         return new JsonResponse(['success' => $success]);
     }
+    
+    public function getRate(int $sampleId) : JsonResponse
+    {
+        $sample = $this->repository->findOrFail($sampleId);
+        $rate = $this->service->getRate($sample);
+        return new JsonResponse($rate);
+    }
 }

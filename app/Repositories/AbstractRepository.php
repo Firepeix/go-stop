@@ -4,28 +4,35 @@
 namespace App\Repositories;
 
 
+use App\Models\AbstractModel;
 use App\Repositories\Interfaces\RepositoryInterface;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 abstract class AbstractRepository implements RepositoryInterface
 {
-    protected function rawIndex(Model $model): Collection
+    abstract protected function getModel() : AbstractModel;
+    
+    public function first()
+    {
+        return $this->getModel()::first();
+    }
+    
+    protected function rawIndex(AbstractModel $model): Collection
     {
         return $model::all();
     }
     
-    protected function rawFindOrFail(int $id, Model $model)
+    protected function rawFindOrFail(int $id, AbstractModel $model)
     {
         return $model::findOrFail($id);
     }
     
-    public function rawFirst(Model $model)
+    public function rawFirst(AbstractModel $model)
     {
         return $model::first();
     }
     
-    public function save(Model $model) : void
+    public function save(AbstractModel $model) : void
     {
         $model->save();
     }

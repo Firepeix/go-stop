@@ -4,7 +4,7 @@
 namespace App\Repositories\Interfaces;
 
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\AbstractModel;
 use Illuminate\Support\Collection;
 
 interface RepositoryInterface
@@ -13,7 +13,7 @@ interface RepositoryInterface
     
     public function first();
     
-    public function save(Model $model) : void;
+    public function save(AbstractModel $model) : void;
     
     public function findOrFail(int $id);
 }

@@ -9,5 +9,5 @@ use Illuminate\Support\Collection;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication, RefreshDatabase;
+    use CreatesApplication;
 }

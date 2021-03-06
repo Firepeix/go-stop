@@ -41,6 +41,12 @@ class ImageServiceTest extends TestCase
         $this->service->processImage($image, new Position(403.3, 281.1), new Position(564.8, 368.6));
         $this->assertSame(true, $image->hasProcessed());
         $this->assertSame(5, $image->getVehiclesQuantity());
+    }
     
+    public function testSortAndSave() : void
+    {
+        $images = $this->repository->index();
+        $this->repository->sortStore($images);
+        $this->assertTrue(true);
     }
 }

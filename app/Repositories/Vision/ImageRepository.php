@@ -4,6 +4,7 @@
 namespace App\Repositories\Vision;
 
 
+use App\Models\AbstractModel;
 use App\Models\Vision\Image;
 use App\Primitives\File;
 use App\Repositories\AbstractRepository;
@@ -16,14 +17,19 @@ class ImageRepository extends AbstractRepository implements ImageRepositoryInter
 {
     private Filesystem $storage;
     
-    public function index(): Collection
+    protected function getModel(): AbstractModel
     {
-        return parent::rawIndex(new Image());
+        return new Image();
     }
     
     public function first() : Image
     {
-        return parent::rawFirst(new Image());
+        return parent::first();
+    }
+    
+    public function index(): Collection
+    {
+        return parent::rawIndex(new Image());
     }
     
     public function __construct(Storage $storage)
@@ -40,4 +46,14 @@ class ImageRepository extends AbstractRepository implements ImageRepositoryInter
     {
         return  $this->storage->put("$cameraId/$date/$hour", $file);
     }
+    
+    public function sortStore(Collection $images): void
+    {
+        $storage = $this->storage;
+        $images->each(function (Image $image, int $index) use ($storage){
+            $storage->put("sorted/$index.{$image->getType()}", $image->getFile()->getContent());
+        });
+    }
+    
+    
 }

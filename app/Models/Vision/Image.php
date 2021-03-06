@@ -60,6 +60,11 @@ class Image extends AbstractModel
         return $path->join('/');
     }
     
+    public function getType() : string
+    {
+        return preg_replace('/.+\./', '', $this->path);
+    }
+    
     public function process(int $quantity) : void
     {
         $this->processed = true;
@@ -73,6 +78,6 @@ class Image extends AbstractModel
     
     public function getVehiclesQuantity() : int
     {
-        return $this->vehicles_quantity;
+        return $this->vehicles_quantity ?? 0;
     }
 }

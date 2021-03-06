@@ -24,10 +24,15 @@ class Record implements ShouldQueue
     public function handle(StartRecording $event)
     {
         $camera = $event->getCamera();
-        $images = $this->service->captureImages($camera, 10, $event->getSecondsPerFrame());
+        $images = $this->service->captureImages($camera, 10);
+        $delay = 0;
         foreach ($images as $image) {
-            $this->imageService->storeImage($image);
-            $this->imageRepository->save($image);
+            if ($delay === 0) {
+                $this->imageService->storeImage($image);
+                $this->imageRepository->save($image);
+                $delay = 3;
+            }
+            $delay--;
         }
         $camera->refresh();
         if ($camera->isRecording()) {

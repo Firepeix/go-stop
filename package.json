@@ -11,12 +11,12 @@
     },
     "devDependencies": {
         "axios": "^0.21",
-        "laravel-mix": "^6.0.6",
-        "lodash": "^4.17.19",
-        "postcss": "^8.1.14"
+        "laravel-mix": "^6.0.13",
+        "lodash": "^4.17.21",
+        "postcss": "^8.2.7"
     },
     "dependencies": {
-        "chromedriver": "^87.0.0",
+        "chromedriver": "^87.0.7",
         "express": "^4.17.1",
         "nightwatch": "^1.5.1"
     }
