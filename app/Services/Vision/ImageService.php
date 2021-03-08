@@ -5,12 +5,14 @@ namespace App\Services\Vision;
 
 use App\Models\Vision\Camera;
 use App\Models\Vision\Image;
+use App\Models\Vision\Objects\Vehicle;
 use App\Primitives\File;
 use App\Primitives\Position;
 use App\Repositories\Interfaces\Vision\ImageRepositoryInterface;
 use App\Services\Interfaces\Vision\ImageLearningMachineServiceInterface;
 use App\Services\Interfaces\Vision\ImageServiceInterface;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class ImageService implements ImageServiceInterface
 {
@@ -36,18 +38,34 @@ class ImageService implements ImageServiceInterface
         return Image::create($camera, $file);
     }
     
-    public function processImage(Image $image, Position $upperBoundLimit = null, Position $lowerBoundLimit = null): void
+    public function processImage(Image $image, Position $upperBoundLimit = null, Position $lowerBoundLimit = null): Collection
     {
-        if ($upperBoundLimit !== null && $lowerBoundLimit !== null) {
-            $image = $this->cutImage($image, $upperBoundLimit, $lowerBoundLimit);
+        $vehicles = $image->getVehicles();
+        if (!$image->hasProcessed()) {
+            $vehicles = $this->service->getVehicles($image);
+            $this->repository->saveVehicles($vehicles);
+            $image->process($vehicles->count());
+            $this->repository->save($image);
         }
-        $quantity = $this->service->getQuantityOfVehicles($image);
-        $image->process($quantity);
+        
+        if ($upperBoundLimit !== null && $lowerBoundLimit !== null) {
+            return $this->filterBasedOnPosition($image, $vehicles, $upperBoundLimit, $lowerBoundLimit);
+        }
+       
+        return $vehicles;
     }
     
-    private function cutImage(Image $image, Position $upperBoundLimit, Position $lowerBoundLimit) : Image
+    private function filterBasedOnPosition(Image $image, Collection $vehicles, Position $upperBoundLimit, Position $lowerBoundLimit) : Collection
     {
-        $rawImage = imagecreatefrompng($image->getFile());
+        return $vehicles->filter(function (Vehicle $vehicle) use ($image, $upperBoundLimit, $lowerBoundLimit){
+            $position = $vehicle->getPosition($image);
+            return $position->isBiggerThan($upperBoundLimit) && $position->isSmallerThan($lowerBoundLimit);
+        });
+    }
+    
+    public function cutImage(Image $image, Position $upperBoundLimit, Position $lowerBoundLimit) : Image
+    {
+        $rawImage = imagecreatefrompng($this->repository->retrieveFile($image));
         $width = $lowerBoundLimit->getX() - $upperBoundLimit->getX();
         $height = $lowerBoundLimit->getY() - $upperBoundLimit->getY();
         $croppedImage = imagecrop($rawImage, ['x' => $upperBoundLimit->getX(), 'y' => $upperBoundLimit->getY(), 'width' => $width, 'height' => $height]);

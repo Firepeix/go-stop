@@ -3,6 +3,7 @@
 namespace App\Listeners\Vision\Camera;
 
 use App\Events\Vision\Camera\StartRecording;
+use App\Events\Vision\Image\StoreImage;
 use App\Repositories\Interfaces\Vision\ImageRepositoryInterface;
 use App\Services\Interfaces\Vision\CameraServiceInterface;
 use App\Services\Interfaces\Vision\ImageServiceInterface;
@@ -30,7 +31,8 @@ class Record implements ShouldQueue
             if ($delay === 0) {
                 $this->imageService->storeImage($image);
                 $this->imageRepository->save($image);
-                $delay = 3;
+                event(new StoreImage($image));
+                $delay = 2;
             }
             $delay--;
         }

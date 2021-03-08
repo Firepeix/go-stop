@@ -3,20 +3,30 @@
 
 namespace App\Vision;
 
-use App\Interfaces\Vision\Fate\FatePredictResponseInterface;
-use App\Primitives\File;
-use App\Vision\Fate\PredictResponse;
+use App\Models\Vision\Image;
+use App\Models\Vision\Objects\Vehicle;
+use App\Primitives\Position;
+use App\Primitives\Transform;
 use Aws\Credentials\Credentials;
 use Aws\Rekognition\RekognitionClient;
+use Illuminate\Support\Collection;
 
 class AmazonRekognition
 {
-    public function processFile(File $file) : FatePredictResponseInterface
+    const VEHICLE_LABELS = ['Transportation' => 0, 'Vehicle' => 1, 'Car' => 2, 'Automobile' => 3];
+    
+    private RekognitionClient $client;
+    public function __construct()
     {
-        $imageName = 'Teste.png';
-        $bucketName = 'gostop';
         $credentials = new Credentials(env('AWS_ACCESS_KEY_ID'), env('AWS_SECRET_ACCESS_KEY'));
-        $client = new RekognitionClient(['region' => env('AWS_DEFAULT_REGION'), 'credentials' => $credentials, 'version' => 'latest']);
+        $this->client =  new RekognitionClient(['region' => env('AWS_DEFAULT_REGION'), 'credentials' => $credentials, 'version' => 'latest']);
+    }
+    
+    public function processFile(Image $image) : Collection
+    {
+        $imageName = $image->getPath();
+        $bucketName = 'gostop';
+        
         $request = [
             'Image' => [
                 'S3Object' => [
@@ -26,7 +36,23 @@ class AmazonRekognition
             ],
             'MinConfidence' => 30
         ];
-        $response = $client->detectLabels($request);
-        dd($response);
+        $response = $this->client->detectLabels($request)->toArray();
+        return $this->searchVehicles(new Collection($response), $image);
+    }
+    
+    public function searchVehicles(Collection $response, Image $image) : Collection
+    {
+        $vehicles = new Collection();
+        foreach ($response['Labels'] as $label) {
+            $type = self::VEHICLE_LABELS[$label['Name']] ?? null;
+            if ($type !== null) {
+                foreach ($label['Instances'] as $instance) {
+                    $position = new Position($instance['BoundingBox']['Left'], $instance['BoundingBox']['Top']);
+                    $transform = new Transform($instance['BoundingBox']['Width'], $instance['BoundingBox']['Height']);
+                    $vehicles->push(Vehicle::CreateAmazon($image, $type, $position, $transform));
+                }
+            }
+        }
+        return $vehicles;
     }
 }

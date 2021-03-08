@@ -9,6 +9,7 @@ use App\Models\Vision\Camera;
 use App\Models\Vision\Image;
 use App\Primitives\File;
 use App\Primitives\Position;
+use Illuminate\Support\Collection;
 
 interface ImageServiceInterface
 {
@@ -16,5 +17,5 @@ interface ImageServiceInterface
     
     public function storeImage(Image $image) : string;
     
-    public function processImage(Image $image, Position $upperBoundLimit = null, Position $lowerBoundLimit = null) : void;
+    public function processImage(Image $image, Position $upperBoundLimit = null, Position $lowerBoundLimit = null) : Collection;
 }

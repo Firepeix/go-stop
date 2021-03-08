@@ -17,4 +17,10 @@ interface ImageRepositoryInterface extends RepositoryInterface
     public function storeFile(int $cameraId, string $date, string $hour, File $file) : string;
     
     public function sortStore(Collection $images) : void;
+    
+    public function storeFilePermanent(Image $image): void;
+    
+    public function saveVehicles(Collection $vehicles) : void;
+    
+    public function retrieveFile(Image $image): File;
 }

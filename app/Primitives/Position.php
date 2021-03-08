@@ -24,4 +24,14 @@ class Position
     {
         return $this->y;
     }
+    
+    public function isBiggerThan(Position $position) : bool
+    {
+        return $this->x >= $position->x && $this->y >= $position->y;
+    }
+    
+    public function isSmallerThan(Position $position) : bool
+    {
+        return $this->x <= $position->x && $this->y <= $position->y;
+    }
 }

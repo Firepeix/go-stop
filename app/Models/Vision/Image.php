@@ -4,13 +4,21 @@ namespace App\Models\Vision;
 
 
 use App\Models\AbstractModel;
+use App\Models\Vision\Objects\Vehicle;
 use App\Primitives\File;
+use App\Primitives\Transform;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
 class Image extends AbstractModel
 {
     private ?File $file;
     private ?string $tmpPath;
+    
+    public function vehicles() : HasMany
+    {
+        return $this->hasMany(Vehicle::class);
+    }
     
     public function __construct(array $attributes = [])
     {
@@ -41,6 +49,11 @@ class Image extends AbstractModel
         }
         
         return $this->file;
+    }
+    
+    public function getPath() : string
+    {
+        return $this->path;
     }
     
     public function replaceFile(string $path) : File
@@ -79,5 +92,15 @@ class Image extends AbstractModel
     public function getVehiclesQuantity() : int
     {
         return $this->vehicles_quantity ?? 0;
+    }
+    
+    public function getVehicles() : Collection
+    {
+        return $this->vehicles;
+    }
+    
+    public function getTransform() : Transform
+    {
+        return new Transform(1292, 718);
     }
 }

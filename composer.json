@@ -14,8 +14,9 @@
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
-        "laravel/framework": "^8.12",
+        "laravel/framework": "^8.31",
         "laravel/tinker": "^2.5",
+        "league/flysystem-aws-s3-v3": "1.0.29",
         "league/fractal": "^0.19.2"
     },
     "require-dev": {
