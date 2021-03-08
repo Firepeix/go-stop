@@ -40,10 +40,11 @@ class SampleService implements SampleServiceInterface
         $camera = $sample->getCamera();
         $images = $camera->getImages();
         $service = $this->imageService;
-        $rate = $images->slice(12, 8)->map(function (Image $image)  use ($service){
-            $service->processImage($image, new Position(403.3, 281.1), new Position(564.8, 368.6));
-            return $image->getVehiclesQuantity();
-        });;
+        $service->processImage($images[0], new Position(403.3, 281.1), new Position(564.8, 368.6));
+        //$rate = $images->slice(12, 8)->map(function (Image $image)  use ($service){
+        //    $service->processImage($image, new Position(403.3, 281.1), new Position(564.8, 368.6));
+        //    return $image->getVehiclesQuantity();
+        //});;
         
         
         return $rate;

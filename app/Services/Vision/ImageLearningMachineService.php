@@ -5,6 +5,7 @@ namespace App\Services\Vision;
 
 use App\Models\Vision\Image;
 use App\Services\Interfaces\Vision\ImageLearningMachineServiceInterface;
+use App\Vision\AmazonRekognition;
 use App\Vision\Fate;
 use App\Vision\Fate\PredictObject;
 use Illuminate\Support\Collection;
@@ -13,11 +14,11 @@ class ImageLearningMachineService implements ImageLearningMachineServiceInterfac
 {
     const VEHICLE_LABELS = ['truck', 'motorcycle', 'car'];
     
-    private Fate $fate;
+    private AmazonRekognition $fate;
     
     public function __construct()
     {
-        $this->fate = new Fate();
+        $this->fate = new AmazonRekognition();
     }
     
     public function getQuantityOfVehicles(Image $image): int
