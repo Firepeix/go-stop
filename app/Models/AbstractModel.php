@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @method static first()
+ * @method static find(int $id)
+ * @method static findOrFail(int $id)
  */
 abstract class AbstractModel extends Model
 {
