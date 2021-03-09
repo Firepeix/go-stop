@@ -18,4 +18,6 @@ interface ImageServiceInterface
     public function storeImage(Image $image) : string;
     
     public function processImage(Image $image, Position $upperBoundLimit = null, Position $lowerBoundLimit = null) : Collection;
+    
+    public function cutImage(Image $image, Position $upperBoundLimit, Position $lowerBoundLimit, $isInBucket = true) : Image;
 }

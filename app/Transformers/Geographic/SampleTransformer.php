@@ -4,13 +4,15 @@
 namespace App\Transformers\Geographic;
 
 use App\Models\Geographic\Sample;
+use App\Transformers\Control\TrafficLightTransformer;
 use App\Transformers\Transformer;
 use App\Transformers\Vision\CameraTransformer;
+use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 
 class SampleTransformer extends Transformer
 {
-    protected $availableIncludes = ['camera'];
+    protected $availableIncludes = ['camera', 'trafficLights'];
     
     public function transform(Sample $sample): array
     {
@@ -26,5 +28,10 @@ class SampleTransformer extends Transformer
     public function includeCamera(Sample $sample) : Item
     {
         return $this->item($sample->getCamera(), new CameraTransformer());
+    }
+    
+    public function includeTrafficLights(Sample $sample) : Collection
+    {
+        return $this->collection($sample->getTrafficLights(), new TrafficLightTransformer());
     }
 }

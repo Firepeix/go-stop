@@ -4,7 +4,10 @@
 namespace App\Primitives;
 
 
-class Position
+use Illuminate\Contracts\Support\Arrayable;
+use JetBrains\PhpStorm\ArrayShape;
+
+class Position implements Arrayable
 {
     private float $x;
     private float $y;
@@ -25,13 +28,22 @@ class Position
         return $this->y;
     }
     
-    public function isBiggerThan(Position $position) : bool
+    public function isBiggerThan(Position $position): bool
     {
         return $this->x >= $position->x && $this->y >= $position->y;
     }
     
-    public function isSmallerThan(Position $position) : bool
+    public function isSmallerThan(Position $position): bool
     {
         return $this->x <= $position->x && $this->y <= $position->y;
+    }
+    
+    #[ArrayShape(['x' => "float", 'y' => "float"])]
+    public function toArray(): array
+    {
+        return [
+            'x' => $this->x,
+            'y' => $this->y,
+        ];
     }
 }

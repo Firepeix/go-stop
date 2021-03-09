@@ -63,9 +63,9 @@ class ImageService implements ImageServiceInterface
         });
     }
     
-    public function cutImage(Image $image, Position $upperBoundLimit, Position $lowerBoundLimit) : Image
+    public function cutImage(Image $image, Position $upperBoundLimit, Position $lowerBoundLimit, $isInBucket = true) : Image
     {
-        $rawImage = imagecreatefrompng($this->repository->retrieveFile($image));
+        $rawImage = imagecreatefrompng(!$isInBucket ? $image->getFile() : $this->repository->retrieveFile($image));
         $width = $lowerBoundLimit->getX() - $upperBoundLimit->getX();
         $height = $lowerBoundLimit->getY() - $upperBoundLimit->getY();
         $croppedImage = imagecrop($rawImage, ['x' => $upperBoundLimit->getX(), 'y' => $upperBoundLimit->getY(), 'width' => $width, 'height' => $height]);

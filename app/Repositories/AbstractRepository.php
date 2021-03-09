@@ -17,6 +17,11 @@ abstract class AbstractRepository implements RepositoryInterface
         return $this->getModel()::first();
     }
     
+    public function find(int $id)
+    {
+        return $this->getModel()::find($id);
+    }
+    
     protected function rawIndex(AbstractModel $model): Collection
     {
         return $model::all();

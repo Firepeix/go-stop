@@ -5,7 +5,7 @@ namespace App\Models\Control;
 use App\Interfaces\General\History\RegisterHistory;
 use App\Models\AbstractModel;
 use App\Models\Geographic\Street;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Primitives\Position;
 use Illuminate\Support\Collection;
 
 class TrafficLight extends AbstractModel implements RegisterHistory
@@ -16,21 +16,6 @@ class TrafficLight extends AbstractModel implements RegisterHistory
     
     const INCOMING = 0;
     const OUTGOING = 1;
-    
-    public function sdstreet(): BelongsTo
-    {
-        return $this->belongsTo(Street::class);
-    }
-    
-    public static function create(int $streetId, int $defaultSwitchTime): self
-    {
-        dd(213);
-        $light                      = new self();
-        $light->street_id           = $streetId;
-        $light->status              = self::CLOSED;
-        $light->default_switch_time = $defaultSwitchTime;
-        return $light;
-    }
     
     public function getStatus(): string
     {
@@ -89,5 +74,30 @@ class TrafficLight extends AbstractModel implements RegisterHistory
             'status'            => $this->getStatus(),
             'groupId'           => $this->getGroupId()
         ];
+    }
+    
+    public function getName() : string
+    {
+        return $this->name;
+    }
+    
+    public function getUUID() : string
+    {
+        return $this->uuid;
+    }
+    
+    public function getSampleId() : int
+    {
+        return $this->sample_id;
+    }
+    
+    public function getUpperPosition() : Position
+    {
+        return new Position($this->upperBoundX, $this->upperBoundY);
+    }
+    
+    public function getLowerPosition() : Position
+    {
+        return new Position($this->lowerBoundX, $this->lowerBoundY);
     }
 }

@@ -4,10 +4,10 @@
 namespace App\Services\Geographic;
 
 
+use App\Models\Control\TrafficLight;
 use App\Models\Geographic\Sample;
 use App\Models\Vision\Camera;
 use App\Models\Vision\Image;
-use App\Primitives\Position;
 use App\Services\Interfaces\Geographic\SampleServiceInterface;
 use App\Services\Interfaces\Vision\CameraServiceInterface;
 use App\Services\Interfaces\Vision\ImageServiceInterface;
@@ -35,14 +35,17 @@ class SampleService implements SampleServiceInterface
         return true;
     }
     
-    public function getRate(Sample $sample): Collection
+    public function getRate(Sample $sample, ? TrafficLight $trafficLight): Collection
     {
         $camera = $sample->getCamera();
         $images = $camera->getImages();
         $service = $this->imageService;
-        $rate = $images->map(function (Image $image)  use ($service){
-            $vehicles = $service->processImage($image, new Position(403.3, 281.1), new Position(564.8, 368.6));
-            return $vehicles->count();
+        $rate = $images->map(function (Image $image)  use ($service, $trafficLight){
+            if ($trafficLight !== null) {
+                $vehicles = $service->processImage($image, $trafficLight->getUpperPosition(), $trafficLight->getLowerPosition());
+                return $vehicles->count();
+            }
+            return $service->processImage($image)->count();
         });;
         
         

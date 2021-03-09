@@ -3,9 +3,9 @@
 namespace App\Models\Geographic;
 
 use App\Models\AbstractModel;
+use App\Models\Control\TrafficLight;
 use App\Models\Vision\Camera;
-use App\Simulation\Sample\Street;
-use App\Simulation\Sample\TrafficLight;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
@@ -32,6 +32,11 @@ class Sample extends AbstractModel
         return $this->hasOne(Camera::class, 'entity_id')->where('type', Camera::SAMPLE_CAMERA);
     }
     
+    public function trafficLights() : HasMany
+    {
+        return $this->hasMany(TrafficLight::class);
+    }
+    
     public static function create(array $payload, Collection $entryStreets, Collection $departureStreets) : sample
     {
         $sample = new Sample();
@@ -41,23 +46,15 @@ class Sample extends AbstractModel
         return $sample;
     }
     
-    private function getDecodedSample() : Collection
-    {
-        if ($this->decodedSample === null) {
-            $this->decodedSample = new Collection(json_decode($this->sample, true));
-        }
-        return $this->decodedSample;
-    }
-    
     /**
      * @return Collection|Street[]
      */
     public function getStreets() : Collection|array
     {
-        if ($this->streets === null) {
-            $sample = $this->getDecodedSample();
-            $this->streets = $this->getDecodedSample()->map(fn(array $street) => Street::Sample($street, $sample));
-        }
+        // if ($this->streets === null) {
+        //     // $sample = $this->getDecodedSample();
+        //    //  $this->streets = $this->getDecodedSample()->map(fn(array $street) => Street::Sample($street, $sample));
+        // }
         return $this->streets;
     }
     
@@ -132,14 +129,7 @@ class Sample extends AbstractModel
     
     public function getTrafficLights() : Collection
     {
-        $trafficLights = new Collection();
-        foreach ($this->getStreets() as $street) {
-            if ($street->getOutgoingLights()->isNotEmpty()) {
-                $trafficLights->put($street->getId(), $street->getOutgoingLights());
-            }
-        }
-        
-        return $trafficLights;
+        return $this->trafficLights;
     }
     
     public function getName() : string

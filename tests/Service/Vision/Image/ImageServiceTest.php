@@ -38,9 +38,8 @@ class ImageServiceTest extends TestCase
     public function testProcessCutImage() : void
     {
         $image = Image::factory()->exists()->make();
-        $this->service->processImage($image, new Position(403.3, 281.1), new Position(564.8, 368.6));
-        $this->assertSame(true, $image->hasProcessed());
-        $this->assertSame(5, $image->getVehiclesQuantity());
+        $this->service->cutImage($image, new Position(93, 460), new Position(381, 541), false);
+        $this->assertTrue(true);
     }
     
     public function testSortAndSave() : void

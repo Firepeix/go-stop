@@ -2,7 +2,6 @@
 
 namespace Database\Factories\Vision;
 
-use App\Models\Geographic\Sample;
 use App\Models\Vision\Camera;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -14,9 +13,12 @@ class CameraFactory extends Factory
     {
         return [
             'id' => 1,
-            'entity_id' => Sample::factory(),
             'camera_view' => 'diaonline',
-            'type' => Camera::SAMPLE_CAMERA
         ];
+    }
+    
+    public function hasSample(int $entityId): CameraFactory
+    {
+        return $this->state(fn() => ['entity_id' => $entityId, 'type' => Camera::SAMPLE_CAMERA]);
     }
 }

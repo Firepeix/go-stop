@@ -13,6 +13,8 @@ interface RepositoryInterface
     
     public function first();
     
+    public function find(int $id);
+    
     public function save(AbstractModel $model) : void;
     
     public function findOrFail(int $id);
