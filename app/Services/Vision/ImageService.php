@@ -3,6 +3,7 @@
 
 namespace App\Services\Vision;
 
+use App\Events\Vision\Image\ProcessImage;
 use App\Models\Vision\Camera;
 use App\Models\Vision\Image;
 use App\Models\Vision\Objects\Vehicle;
@@ -42,10 +43,8 @@ class ImageService implements ImageServiceInterface
     {
         $vehicles = $image->getVehicles();
         if (!$image->hasProcessed()) {
-            $vehicles = $this->service->getVehicles($image);
-            $this->repository->saveVehicles($vehicles);
-            $image->process($vehicles->count());
-            $this->repository->save($image);
+            $vehicles = new Collection();
+            event(new ProcessImage($image));
         }
         
         if ($upperBoundLimit !== null && $lowerBoundLimit !== null) {
