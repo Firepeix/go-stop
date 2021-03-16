@@ -6,6 +6,7 @@ namespace App\Models\Geographic;
 use App\Interfaces\Geographic\CreateStreetInterface;
 use App\Models\AbstractModel;
 use App\Models\Control\TrafficLight;
+use App\Primitives\Position;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Collection;
@@ -44,9 +45,29 @@ class Street extends AbstractModel
         return $this->name;
     }
     
-    public function getOutgoingStreets() : Collection
+    public function getUUID() : string
     {
-        return $this->outgoingStreets;
+        return $this->uuid;
+    }
+    
+    public function getSampleId() : int
+    {
+        return $this->sample_id;
+    }
+    
+    public function getOutgoingStreetsUUIDs() : array
+    {
+        return json_decode($this->outgoing_streets);
+    }
+    
+    public function getOutgoingTrafficLightsUUIDs() : array
+    {
+        return json_decode($this->outgoing_traffic_lights);
+    }
+    
+    public function getGraphPosition(): Position
+    {
+        return new Position($this->graph_position_x, $this->graph_position_y);
     }
     
     public function getStreets(int $direction) : Collection

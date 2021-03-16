@@ -16,14 +16,16 @@ class TrafficLightTransformer extends Transformer
     public function transform(TrafficLight $light): array
     {
         return $this->change($light, [
-            'id'                => $light->getId(),
-            'uuid'              => $light->getUUID(),
-            'sampleId'          => $light->getSampleId(),
-            'name'              => $light->getName(),
-            'defaultSwitchTime' => $light->getDefaultSwitchTime(),
-            'status'            => $light->getStatus(),
-            'upperPosition'     => $light->getUpperPosition()->toArray(),
-            'lowerPosition'     => $light->getLowerPosition()->toArray()
+            'id'                   => $light->getId(),
+            'uuid'                 => $light->getUUID(),
+            'sampleId'             => $light->getSampleId(),
+            'name'                 => $light->getName(),
+            'defaultSwitchTime'    => $light->getDefaultSwitchTime(),
+            'status'               => $light->getStatus(),
+            'upperPosition'        => $light->getUpperPosition()->toArray(),
+            'lowerPosition'        => $light->getLowerPosition()->toArray(),
+            'outgoingStreetsUUIDs' => $light->getOutgoingStreetsUUIDs(),
+            'graphPosition' => $light->getGraphPosition()->toArray()
         ]);
     }
     

@@ -12,7 +12,6 @@ use Illuminate\Support\Collection;
 class Sample extends AbstractModel
 {
     private ? Collection $decodedSample;
-    private ? Collection $streets;
     private ? Collection $entryStreets;
     private ? Collection $departureStreets;
     private Collection $routes;
@@ -21,7 +20,6 @@ class Sample extends AbstractModel
     {
         parent::__construct($attributes);
         $this->decodedSample = null;
-        $this->streets = null;
         $this->entryStreets = null;
         $this->departureStreets = null;
         $this->routes = new Collection();
@@ -37,6 +35,11 @@ class Sample extends AbstractModel
         return $this->hasMany(TrafficLight::class);
     }
     
+    public function streets() : HasMany
+    {
+        return $this->hasMany(Street::class);
+    }
+    
     public static function create(array $payload, Collection $entryStreets, Collection $departureStreets) : sample
     {
         $sample = new Sample();
@@ -44,18 +47,6 @@ class Sample extends AbstractModel
         $sample->departures = json_encode($departureStreets->pluck('id')->toArray());
         $sample->sample = json_encode($payload);
         return $sample;
-    }
-    
-    /**
-     * @return Collection|Street[]
-     */
-    public function getStreets() : Collection|array
-    {
-        // if ($this->streets === null) {
-        //     // $sample = $this->getDecodedSample();
-        //    //  $this->streets = $this->getDecodedSample()->map(fn(array $street) => Street::Sample($street, $sample));
-        // }
-        return $this->streets;
     }
     
     public function getEntryStreets() : Collection
@@ -160,5 +151,10 @@ class Sample extends AbstractModel
     public function getCamera() : Camera
     {
         return $this->camera;
+    }
+    
+    public function getStreets() : Collection
+    {
+        return $this->streets;
     }
 }

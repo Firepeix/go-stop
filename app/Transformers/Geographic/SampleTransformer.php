@@ -12,7 +12,7 @@ use League\Fractal\Resource\Item;
 
 class SampleTransformer extends Transformer
 {
-    protected $availableIncludes = ['camera', 'trafficLights'];
+    protected $availableIncludes = ['camera', 'trafficLights', 'streets'];
     
     public function transform(Sample $sample): array
     {
@@ -33,5 +33,10 @@ class SampleTransformer extends Transformer
     public function includeTrafficLights(Sample $sample) : Collection
     {
         return $this->collection($sample->getTrafficLights(), new TrafficLightTransformer());
+    }
+    
+    public function includeStreets(Sample $sample) : Collection
+    {
+        return $this->collection($sample->getStreets(), new StreetTransformer());
     }
 }

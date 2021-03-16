@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Control\TrafficLight;
+use App\Models\Geographic\Street;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,8 +13,13 @@ class DatabaseSeeder extends Seeder
         // $sample = Sample::factory(1)->create();
         // Camera::factory()->hasSample($sample->getId())->create();
         // TrafficLight::factory()->hasSample($sample->getId())->create();
-        for ($i = 0; $i < 3; $i++) {
-            TrafficLight::factory()->hasSample(1)->alreadyExists($i)->create();
+        // for ($i = 0; $i < 2; $i++) {
+        //     TrafficLight::factory()->hasSample(1)->alreadyExists($i)->create();
+        // }
+        // Street::factory()->hasSample($sample->getId())->create();
+    
+        for ($i = 0; $i < 5; $i++) {
+            Street::factory()->hasSample(1)->alreadyExists($i)->create();
         }
     }
 }

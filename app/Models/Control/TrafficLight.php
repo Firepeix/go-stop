@@ -22,6 +22,19 @@ class TrafficLight extends AbstractModel implements RegisterHistory
         return $this->status;
     }
     
+    /**
+     * @return string[]
+     */
+    public function getOutgoingStreetsUUIDs(): array
+    {
+        return json_decode($this->outgoing_streets);
+    }
+    
+    public function getGraphPosition(): Position
+    {
+        return new Position($this->graph_position_x, $this->graph_position_y);
+    }
+    
     public function getDefaultSwitchTime(): int
     {
         return $this->default_switch_time;
@@ -93,11 +106,11 @@ class TrafficLight extends AbstractModel implements RegisterHistory
     
     public function getUpperPosition() : Position
     {
-        return new Position($this->upperBoundX, $this->upperBoundY);
+        return new Position($this->upper_bound_x, $this->upper_bound_y);
     }
     
     public function getLowerPosition() : Position
     {
-        return new Position($this->lowerBoundX, $this->lowerBoundY);
+        return new Position($this->lower_bound_x, $this->lower_bound_y);
     }
 }
